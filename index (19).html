@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+
+       <script src="script.js"></script>
+    </body>
+</html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quản lý cửa hàng - Glass Apple</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --glass-bg: rgba(30, 30, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-highlight: rgba(255, 255, 255, 0.05);
+            
+            --apple-blue: #0A84FF;
+            --apple-green: #30D158;
+            --apple-red: #FF453A;
+            --apple-orange: #FF9F0A;
+            --apple-gray: #8E8E93;
+            
+            --text-main: #FFFFFF;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Blobs cho hiệu ứng kính */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: float 10s infinite alternate;
+        }
+        .blob-1 { width: 300px; height: 300px; background: var(--apple-blue); top: -50px; left: -80px; }
+        .blob-2 { width: 350px; height: 350px; background: var(--apple-orange); bottom: 10%; right: -100px; opacity: 0.3; animation-delay: -5s; }
+        .blob-3 { width: 250px; height: 250px; background: var(--apple-green); top: 40%; left: 20%; opacity: 0.2; animation-delay: -2s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        /* Tiêu đề */
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .backup-countdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: 1px solid var(--glass-border);
+            border-radius: 999px;
+            color: var(--apple-green);
+            background: rgba(48, 209, 88, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Thanh Tabs */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 4px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Khung kính (Panel) */
+        .panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form inputs */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        input, select {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--apple-blue);
+            background: rgba(10, 132, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.3); }
+        select option { background: #1c1c1e; color: #fff; }
+
+        /* Buttons */
+        .btn {
+            background: var(--apple-blue);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3);
+        }
+
+        .btn:active { transform: scale(0.97); }
+        
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            box-shadow: none;
+            backdrop-filter: blur(10px);
+        }
+        .btn-outline:active { background: rgba(255, 255, 255, 0.1); }
+
+        .btn-danger { background: rgba(255, 69, 58, 0.15); border: 1px solid rgba(255, 69, 58, 0.3); color: var(--apple-red); box-shadow: none; }
+        .btn-warning { background: rgba(255, 159, 10, 0.15); border: 1px solid rgba(255, 159, 10, 0.3); color: var(--apple-orange); box-shadow: none; }
+        .btn-success { background: rgba(48, 209, 88, 0.15); border: 1px solid rgba(48, 209, 88, 0.3); color: var(--apple-green); box-shadow: none; }
+        
+        .btn-small { padding: 8px 14px; width: auto; font-size: 0.85rem; border-radius: var(--radius-sm); }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-box.clickable { cursor: pointer; transition: all 0.2s; }
+        .stat-box.clickable:active { transform: scale(0.97); border-color: rgba(255,255,255,0.3); }
+
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+        .stat-value { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
+
+        .text-danger { color: var(--apple-red); }
+        .text-success { color: var(--apple-green); }
+        .text-primary { color: var(--apple-blue); }
+        .text-warning { color: var(--apple-orange); }
+
+        /* Danh sách */
+        .list-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+        }
+
+        .list-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .phone-card { cursor: pointer; border-radius: var(--radius-sm); padding: 16px 12px; margin: 0 -12px; }
+        .phone-card:active { background: rgba(255, 255, 255, 0.05); }
+
+        .item-info { flex: 1; min-width: 0; }
+        .item-title { font-weight: 600; font-size: 1rem; margin-bottom: 6px; overflow-wrap: anywhere; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .item-title span { font-weight: 400; font-size: 0.85rem; color: var(--text-muted); }
+        .item-sub { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; overflow-wrap: anywhere; }
+
+        .item-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+        .arrow { color: var(--text-muted); font-size: 1.2rem; }
+
+        .amount { font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
+
+        .debt-badge {
+            background: rgba(255, 159, 10, 0.15);
+            color: var(--apple-orange);
+            border: 1px solid rgba(255, 159, 10, 0.3);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-text { color: var(--text-muted); font-style: italic; font-size: 0.9rem; text-align: center; padding: 20px 0; }
+        .search-box { position: relative; margin-bottom: 16px; }
+        .search-box input { padding-left: 40px; border-radius: var(--radius-md); }
+        .search-box::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.6; }
+
+        /* Modals */
+        .modal-backdrop {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000; align-items: center; justify-content: center; padding: 16px;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-backdrop.show { display: flex; opacity: 1; }
+
+        .modal {
+            background: rgba(30, 30, 35, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-lg);
+            padding: 24px; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .modal-backdrop.show .modal { transform: translateY(0); }
+
+        .modal h3 { font-size: 1.2rem; margin-bottom: 8px; font-weight: 600; }
+        .modal .sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+        .modal-actions .btn { flex: 1; }
+
+        .method-group { display: flex; gap: 10px; margin-bottom: 16px; }
+        .method-option {
+            flex: 1; padding: 14px 8px; border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm); text-align: center; cursor: pointer;
+            font-size: 0.9rem; background: rgba(0, 0, 0, 0.3); color: var(--text-muted);
+            user-select: none; transition: all 0.2s;
+        }
+        .method-option.selected {
+            border-color: var(--apple-blue);
+            background: rgba(10, 132, 255, 0.15);
+            color: var(--text-main); font-weight: 600;
+            box-shadow: inset 0 0 10px rgba(10, 132, 255, 0.2);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(48, 209, 88, 0.9); color: #fff; padding: 12px 24px;
+            border-radius: 999px; font-weight: 600; font-size: 0.9rem;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000;
+            pointer-events: none; white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 420px) {
+            .tab-btn { font-size: 0.85rem; padding: 8px 2px; }
+            .stat-value { font-size: 1.15rem; }
+            .btn-small { padding: 6px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <h1>
+        <span>Cửa hàng điện thoại</span>
+        <span class="backup-countdown" id="backup-countdown" aria-live="polite">⏱ --:--</span>
+    </h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-tongquan', this)">Tổng quan</button>
+        <button class="tab-btn" onclick="switchTab('tab-may', this)">DS máy</button>
+        <button class="tab-btn" onclick="switchTab('tab-khomay', this)">Nhập máy</button>
+        <button class="tab-btn" onclick="switchTab('tab-thuchi', this)">Thu chi</button>
+    </div>
+
+    <div id="tab-tongquan" class="tab-content active">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Quỹ còn lại</div>
+                <div class="stat-value" id="ov-quy">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">💵 Tiền mặt</div>
+                <div class="stat-value" id="ov-tienmat">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">🏦 Tài khoản</div>
+                <div class="stat-value" id="ov-chuyenkhoan">0</div>
+            </div>
+            
+            <div class="stat-box" style="border-color: rgba(255,159,10,0.3); background: linear-gradient(135deg, rgba(255,159,10,0.1), rgba(30,30,35,0.6));">
+                <div class="stat-label text-warning">📝 Nợ NCC (cần trả)</div>
+                <div class="stat-value text-warning" id="ov-tongno">0</div>
+            </div>
+            <div class="stat-box" style="border-color: rgba(255,159,10,0.3); background: linear-gradient(135deg, rgba(255,159,10,0.1), rgba(30,30,35,0.6));">
+                <div class="stat-label text-warning">💸 Khách nợ (cần thu)</div>
+                <div class="stat-value text-warning" id="ov-khachno">0</div>
+            </div>
+            
+            <div class="stat-box clickable" onclick="openStockFromOverview()">
+                <div class="stat-label text-primary">Máy tồn kho (Xem)</div>
+                <div class="stat-value" id="ov-mayton">0 chiếc</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Vốn trong kho</div>
+                <div class="stat-value" id="ov-vontonkho">0</div>
+            </div>
+            
+            <div class="stat-box clickable" onclick="openSoldFromOverview()">
+                <div class="stat-label text-primary">Máy đã bán (Xem)</div>
+                <div class="stat-value" id="ov-maydaban">0 chiếc</div>
+            </div>
+            
+            <div class="stat-box">
+                <div class="stat-label">Lãi máy đã bán</div>
+                <div class="stat-value text-success" id="ov-laimay">0</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Máy tồn lâu</div>
+            <div class="form-group">
+                <label>Cảnh báo khi tồn từ (ngày)</label>
+                <input type="number" id="canh-bao-ngay" value="30" min="1" onchange="saveSettings(); renderAll();">
+            </div>
+            <div id="list-ton-lau"><p class="empty-text">Chưa có máy nào tồn quá lâu.</p></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">📝 Danh sách nợ</div>
+            <div id="list-debts"><p class="empty-text">Không có khoản nợ nào.</p></div>
+        </div>
+
+        <div class="d-flex" style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn btn-outline btn-small" onclick="backupData()">Sao lưu</button>
+            <button class="btn btn-outline btn-small" onclick="document.getElementById('restore-file').click()">Khôi phục</button>
+            <input type="file" id="restore-file" style="display:none" accept=".json,application/json" onchange="restoreData(event)">
+        </div>
+    </div>
+
+    <div id="tab-may" class="tab-content">
+        <div class="panel">
+            <div class="panel-title">📱 Danh sách máy</div>
+            <div class="search-box">
+                <input type="text" id="may-search" placeholder="Tìm IMEI hoặc tên máy..." oninput="renderPhoneCards()">
+            </div>
+            <div style="margin-bottom:16px">
+                <select id="may-filter" onchange="renderPhoneCards()">
+                    <option value="all">Tất cả máy</option>
+                    <option value="stock">Đang tồn kho</option>
+                    <option value="sold">Đã bán</option>
+                    <option value="debt">Đang nợ</option>
+                    <option value="old">Tồn lâu</option>
+                </select>
+            </div>
+            <div id="list-phone-cards"></div>
+        </div>
+    </div>
+
+    <div id="tab-khomay" class="tab-content">
+        <div class="panel">
+            <div class="panel-title">Nhập máy mới</div>
+            <div class="form-group"><label>Tên máy</label><input type="text" id="km-ten" placeholder="VD: iPhone 11 64GB"></div>
+            <div class="form-group"><label>IMEI / Serial</label><input type="text" id="km-imei" placeholder="Nhập IMEI hoặc Serial"></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Tình trạng</label><select id="km-tinhtrang"><option value="Cũ đẹp">Cũ đẹp</option><option value="Cũ xước">Cũ xước</option><option value="Mới 100%">Mới 100%</option><option value="Like new">Like new</option></select></div>
+                <div class="form-group"><label>Ngày nhập</label><input type="date" id="km-ngaynhap"></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Giá nhập (K)</label><input type="number" id="km-gianhap" min="0" placeholder="VD: 8500"></div>
+                <div class="form-group"><label>Chi phí phụ (K)</label><input type="number" id="km-chiphisua" min="0" placeholder="VD: 0"></div>
+            </div>
+            <div class="form-group">
+                <label>Hình thức chi tiền</label>
+                <select id="km-hinhthuc">
+                    <option value="Tiền mặt">💵 Tiền mặt</option>
+                    <option value="Chuyển khoản">🏦 Chuyển khoản</option>
+                    <option value="Nợ">📝 Nợ (chưa trả)</option>
+                </select>
+            </div>
+            <button class="btn" onclick="addPhone()">Lưu máy</button>
+        </div>
+    </div>
+
+    <div id="tab-thuchi" class="tab-content">
+        <div class="panel">
+            <div class="panel-title">Ghi thu / chi</div>
+            <div class="grid-2">
+                <div class="form-group"><label>Ngày</label><input type="date" id="tc-ngay"></div>
+                <div class="form-group"><label>Loại</label><select id="tc-loai" onchange="updateCategories()"><option value="Thu">Thu</option><option value="Chi">Chi</option></select></div>
+            </div>
+            <div class="form-group"><label>Danh mục</label><select id="tc-danhmuc"></select></div>
+            <div class="form-group"><label>Nội dung</label><input type="text" id="tc-noidung" placeholder="Nhập nội dung..."></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Số tiền (K)</label><input type="number" id="tc-sotien" min="0" placeholder="VD: 150"></div>
+                <div class="form-group"><label>Hình thức</label><select id="tc-hinhthuc"><option value="Tiền mặt">Tiền mặt</option><option value="Chuyển khoản">Chuyển khoản</option></select></div>
+            </div>
+            <button class="btn" onclick="addTransaction()">Lưu giao dịch</button>
+        </div>
+
+        <div class="panel">
+            <!-- CẬP NHẬT: Thêm bộ lọc Loại (Thu/Chi) bên cạnh bộ lọc tháng -->
+            <div class="list-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+                <div class="panel-title" style="margin:0">Sổ thu chi</div>
+                <div style="display:flex;gap:6px;">
+                    <select id="tc-filter-type" style="width:auto;padding:8px 12px;font-size:0.85rem" onchange="renderTransactions()">
+                        <option value="all">Tất cả</option>
+                        <option value="Thu">Thu</option>
+                        <option value="Chi">Chi</option>
+                    </select>
+                    <select id="tc-filter-month" style="width:auto;padding:8px 12px;font-size:0.85rem" onchange="renderTransactions()">
+                        <option value="all">Tất cả tháng</option>
+                    </select>
+                </div>
+            </div>
+            <div id="tc-summary" class="item-sub" style="margin-bottom:16px;border-bottom:1px solid var(--glass-border);padding-bottom:12px;font-weight:600;">Thu 0 · Chi 0 · Chênh lệch 0</div>
+            <div id="list-transactions"></div>
+        </div>
+    </div>
+
+    <!-- MODAL BÁN MÁY -->
+    <div class="modal-backdrop" id="sell-modal">
+        <div class="modal">
+            <h3 id="sell-title">Bán máy</h3>
+            <p class="sub" id="sell-sub"></p>
+            
+            <div class="form-group">
+                <label>Giá bán (K)</label>
+                <input type="number" id="sell-giaban" min="0" placeholder="VD: 10000" oninput="updateSellRemaining()">
+            </div>
+
+            <!-- Vùng hiển thị Lãi/Lỗ dự kiến -->
+            <div id="sell-profit-box" class="item-sub" style="display:none; padding:12px; margin-bottom:12px; border-radius:var(--radius-sm); text-align:center; transition: all 0.3s;">
+                Dự kiến: <b id="sell-profit-val" style="font-size:1.1rem">0</b>
+            </div>
+
+            <div class="form-group">
+                <label>Hình thức thu tiền</label>
+                <div class="method-group" id="sell-method-group">
+                    <div class="method-option selected" data-method="Tiền mặt" onclick="selectSellMethod(this)">💵 Tiền mặt</div>
+                    <div class="method-option" data-method="Chuyển khoản" onclick="selectSellMethod(this)">🏦 Chuyển khoản</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Khách trả trước (K)</label>
+                <input type="number" id="sell-tra-truoc" min="0" placeholder="Để trống = trả đủ" oninput="updateSellRemaining()">
+            </div>
+            <div class="item-sub" style="padding:14px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);text-align:center;">
+                Còn nợ lại: <b id="sell-con-no" class="text-warning" style="font-size:1.1rem">0</b>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeSellModal()">Hủy</button>
+                <button class="btn" onclick="confirmSell()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TRẢ NỢ NCC -->
+    <div class="modal-backdrop" id="pay-modal">
+        <div class="modal">
+            <h3 id="pay-title">Trả nợ NCC</h3>
+            <p class="sub" id="pay-sub"></p>
+            <div class="form-group">
+                <label>Hình thức thanh toán</label>
+                <div class="method-group" id="pay-method-group">
+                    <div class="method-option selected" data-method="Tiền mặt" onclick="selectPayMethod(this)">💵 Tiền mặt</div>
+                    <div class="method-option" data-method="Chuyển khoản" onclick="selectPayMethod(this)">🏦 Chuyển khoản</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Số tiền trả (K)</label>
+                <input type="number" id="pay-sotien" min="0" placeholder="Nhập số K">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closePayModal()">Hủy</button>
+                <button class="btn" onclick="confirmPay()">Xác nhận trả</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THU NỢ KHÁCH HÀNG -->
+    <div class="modal-backdrop" id="collect-modal">
+        <div class="modal">
+            <h3 id="collect-title">Thu nợ khách</h3>
+            <p class="sub" id="collect-sub"></p>
+            <div class="form-group">
+                <label>Hình thức thu</label>
+                <div class="method-group" id="collect-method-group">
+                    <div class="method-option selected" data-method="Tiền mặt" onclick="selectCollectMethod(this)">💵 Tiền mặt</div>
+                    <div class="method-option" data-method="Chuyển khoản" onclick="selectCollectMethod(this)">🏦 Chuyển khoản</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Số tiền thu (K)</label>
+                <input type="number" id="collect-sotien" min="0" placeholder="Nhập số K">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeCollectModal()">Hủy</button>
+                <button class="btn btn-success" onclick="confirmCollect()">Xác nhận thu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast thông báo -->
+    <div id="toast" class="toast">Thành công!</div>
+
+    <script>
+        let store = { phones: [], transactions: [], settings: { alertDays: 30 } };
+        const STORAGE_KEY = 'phone_shop_glass_v2'; 
+        const AUTO_BACKUP_KEY = 'phone_shop_auto_backup_v1';
+        const AUTO_BACKUP_TIME_KEY = 'phone_shop_auto_backup_time_v1';
+        const AUTO_BACKUP_INTERVAL = 30 * 60 * 1000;
+
+        let currentSellPhoneId = null;
+        let currentSellCostPrice = 0;
+        let currentPayPhoneId = null;
+        let currentCollectPhoneId = null;
+
+        function initData() {
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                store.phones = [
+                    { id: 'p1', ten: 'iPhone 13 Pro Max', imei: '123456789', tinhtrang: 'Cũ đẹp', ngaynhap: '2026-11-10', gianhap: 15000000, chiphi: 0, hinhthuc: 'Tiền mặt', trangthai: 'stock', giaban: 0, noBanDau: 0, noConLai: 0, khachNo: 0 }
+                ];
+                store.transactions = [
+                    { id: 't1', ngay: '2026-11-10', thoiGian: new Date().toISOString(), loai: 'Chi', danhmuc: 'Nhập máy', noidung: 'iPhone 13 Pro Max', sotien: 15000000, hinhthuc: 'Tiền mặt' }
+                ];
+                saveData();
+            }
+        }
+
+        function localDateString(date = new Date()) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
+
+        // HÀM FORMAT TIỀN TỆ (Nhận VNĐ, trả về dạng K/tr/ti)
+        function formatMoney(amount) {
+            if (amount === undefined || amount === null || amount === '') return '0';
+            let num = Number(amount);
+            if (num === 0) return '0';
+            
+            let isNegative = num < 0;
+            num = Math.abs(num);
+            
+            let ty = Math.floor(num / 1000000000);
+            num %= 1000000000;
+            let trieu = Math.floor(num / 1000000);
+            num %= 1000000;
+            let nghin = Math.floor(num / 1000);
+            let dong = num % 1000;
+            
+            let str = '';
+            if (ty > 0) str += ty + 'ti';
+            
+            if (trieu > 0) {
+                if (str !== '' && trieu < 100) str += String(trieu).padStart(3, '0');
+                else str += trieu;
+                str += 'tr';
+            }
+            
+            if (nghin > 0) {
+                if (str !== '' && nghin < 100) str += String(nghin).padStart(3, '0');
+                else str += nghin;
+                str += 'k';
+            }
+            
+            if (dong > 0 || str === '') {
+                if (str !== '' && dong < 100) str += String(dong).padStart(3, '0');
+                else str += dong;
+            }
+            
+            return (isNegative ? '-' : '') + str;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const parts = dateString.split('-');
+            return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
+        }
+
+        // HÀM MỚI: Format Ngày Giờ cho Giao dịch
+        function formatTransactionDateTime(t) {
+            if (t.thoiGian) {
+                try {
+                    const d = new Date(t.thoiGian);
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const year = d.getFullYear();
+                    const hours = String(d.getHours()).padStart(2, '0');
+                    const minutes = String(d.getMinutes()).padStart(2, '0');
+                    return `${hours}:${minutes} ${day}/${month}/${year}`;
+                } catch (e) {
+                    return formatDate(t.ngay);
+                }
+            }
+            return formatDate(t.ngay);
+        }
+
+        function formatDateTime(isoString) {
+            if (!isoString) return 'Không rõ';
+            try {
+                const d = new Date(isoString);
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes} ${day}/${month}/${year}`;
+            } catch (e) {
+                return 'Lỗi định dạng';
+            }
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.background = isError ? 'rgba(255, 69, 58, 0.9)' : 'rgba(48, 209, 88, 0.9)';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    store.phones = Array.isArray(parsed.phones) ? parsed.phones : [];
+                    store.transactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
+                    store.settings = parsed.settings || { alertDays: 30 };
+                } catch (e) {
+                    console.error('Lỗi đọc dữ liệu', e);
+                }
+            }
+            const today = localDateString();
+            document.getElementById('km-ngaynhap').value = today;
+            document.getElementById('tc-ngay').value = today;
+            document.getElementById('canh-bao-ngay').value = store.settings.alertDays || 30;
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+            } catch (e) {
+                showToast('Lỗi bộ nhớ!', true);
+            }
+        }
+
+        function createAutoBackup() {
+            try {
+                const backup = { createdAt: new Date().toISOString(), data: JSON.parse(JSON.stringify(store)) };
+                localStorage.setItem(AUTO_BACKUP_KEY, JSON.stringify(backup));
+                localStorage.setItem(AUTO_BACKUP_TIME_KEY, String(Date.now()));
+            } catch (e) {}
+        }
+
+        function updateBackupCountdown() {
+            const display = document.getElementById('backup-countdown');
+            if (!display) return;
+            const lastBackup = Number(localStorage.getItem(AUTO_BACKUP_TIME_KEY) || Date.now());
+            const remaining = Math.max(0, AUTO_BACKUP_INTERVAL - (Date.now() - lastBackup));
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            display.textContent = `⏱ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function startAutoBackup() {
+            const now = Date.now();
+            let lastBackup = Number(localStorage.getItem(AUTO_BACKUP_TIME_KEY) || 0);
+            if (lastBackup && now - lastBackup >= AUTO_BACKUP_INTERVAL) {
+                createAutoBackup(); lastBackup = Date.now();
+            } else if (!lastBackup) {
+                localStorage.setItem(AUTO_BACKUP_TIME_KEY, String(now)); lastBackup = now;
+            }
+            updateBackupCountdown();
+            window.setInterval(() => {
+                const savedAt = Number(localStorage.getItem(AUTO_BACKUP_TIME_KEY) || 0);
+                if (Date.now() - savedAt >= AUTO_BACKUP_INTERVAL) createAutoBackup();
+                updateBackupCountdown();
+            }, 1000);
+        }
+
+        function saveSettings() {
+            store.settings.alertDays = Math.max(1, parseInt(document.getElementById('canh-bao-ngay').value, 10) || 30);
+            saveData();
+        }
+
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+        function openStockFromOverview() {
+            const dsMayTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-may"]');
+            if (!dsMayTabButton) return;
+            document.getElementById('may-filter').value = 'stock';
+            switchTab('tab-may', dsMayTabButton);
+        }
+
+        function openSoldFromOverview() {
+            const dsMayTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-may"]');
+            if (!dsMayTabButton) return;
+            document.getElementById('may-filter').value = 'sold';
+            switchTab('tab-may', dsMayTabButton);
+        }
+
+        function switchTab(tabId, button) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            button.classList.add('active');
+            if (tabId === 'tab-tongquan') renderOverview();
+            if (tabId === 'tab-may') renderPhoneCards();
+            if (tabId === 'tab-thuchi') renderTransactions();
+        }
+
+        function renderAll() {
+            renderOverview();
+            renderPhoneCards();
+            renderTransactions();
+            updateCategories();
+        }
+
+        function getTotalDebt() {
+            return store.phones.reduce((sum, p) => sum + (Number(p.noConLai) || 0), 0);
+        }
+
+        function getTotalCustomerDebt() {
+            return store.phones.reduce((sum, p) => sum + (Number(p.khachNo) || 0), 0);
+        }
+
+        function renderOverview() {
+            let totalQuy = 0, cash = 0, bank = 0;
+
+            store.transactions.forEach(t => {
+                const amount = Number(t.sotien) || 0;
+                const isThu = t.loai === 'Thu';
+                if (isThu) {
+                    totalQuy += amount;
+                    if (t.hinhthuc === 'Tiền mặt') cash += amount; else bank += amount;
+                } else {
+                    totalQuy -= amount;
+                    if (t.hinhthuc === 'Tiền mặt') cash -= amount; else bank -= amount;
+                }
+            });
+
+            const setStat = (id, value, extraClass = '') => {
+                const el = document.getElementById(id);
+                if(el) { el.textContent = value; el.className = 'stat-value ' + extraClass; }
+            };
+
+            setStat('ov-quy', formatMoney(totalQuy), totalQuy < 0 ? 'text-danger' : '');
+            setStat('ov-tienmat', formatMoney(cash), cash < 0 ? 'text-danger' : '');
+            setStat('ov-chuyenkhoan', formatMoney(bank), bank < 0 ? 'text-danger' : '');
+            setStat('ov-tongno', formatMoney(getTotalDebt()), 'text-warning');
+            setStat('ov-khachno', formatMoney(getTotalCustomerDebt()), 'text-warning');
+
+            const stockPhones = store.phones.filter(p => p.trangthai === 'stock');
+            const soldPhones = store.phones.filter(p => p.trangthai === 'sold');
+            setStat('ov-mayton', stockPhones.length + ' chiếc');
+            const vonTon = stockPhones.reduce((sum, p) => sum + (Number(p.gianhap) || 0) + (Number(p.chiphi) || 0), 0);
+            setStat('ov-vontonkho', formatMoney(vonTon));
+            setStat('ov-maydaban', soldPhones.length + ' chiếc');
+            const laiMay = soldPhones.reduce((sum, p) => sum + (Number(p.giaban) - (Number(p.gianhap) + Number(p.chiphi))), 0);
+            setStat('ov-laimay', formatMoney(laiMay), laiMay < 0 ? 'text-danger' : 'text-success');
+
+            const alertDays = Math.max(1, Number(store.settings.alertDays) || 30);
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const oldPhones = stockPhones.map(p => {
+                const inDate = new Date(`${p.ngaynhap}T00:00:00`);
+                const diffDays = Math.floor((today - inDate) / 86400000);
+                return diffDays >= alertDays ? `<div class="item-sub" style="margin-top:6px">• ${escapeHtml(p.ten)} (${escapeHtml(p.imei || 'Không IMEI')}) - <span class="text-warning">Tồn ${diffDays} ngày</span></div>` : '';
+            }).filter(Boolean).join('');
+            document.getElementById('list-ton-lau').innerHTML = oldPhones || '<p class="empty-text">Chưa có máy nào tồn quá lâu.</p>';
+
+            const debtPhones = store.phones.filter(p => Number(p.noConLai) > 0 || Number(p.khachNo) > 0);
+            const debtList = document.getElementById('list-debts');
+            if (!debtPhones.length) {
+                debtList.innerHTML = '<p class="empty-text">Không có khoản nợ nào.</p>';
+            } else {
+                debtList.innerHTML = debtPhones.map(p => {
+                    let subText = `Nhập: ${formatDate(p.ngaynhap)}`;
+                    if (Number(p.noConLai) > 0) subText += ` · <span class="text-warning">Nợ NCC: ${formatMoney(p.noConLai)}</span>`;
+                    if (Number(p.khachNo) > 0) subText += ` · <span class="text-warning">Khách nợ: ${formatMoney(p.khachNo)}</span>`;
+
+                    let buttons = '';
+                    if (Number(p.noConLai) > 0) buttons += `<button class="btn btn-small btn-warning" onclick="openPayModal('${p.id}')">Trả NCC</button>`;
+                    if (Number(p.khachNo) > 0) buttons += `<button class="btn btn-small btn-success" onclick="openCollectModal('${p.id}')">Thu KH</button>`;
+
+                    return `<div class="list-item">
+                        <div class="item-info">
+                            <div class="item-title">${escapeHtml(p.ten)} <span>· ${escapeHtml(p.imei)}</span></div>
+                            <div class="item-sub">${subText}</div>
+                        </div>
+                        <div class="item-actions" style="display:flex;flex-direction:column;gap:6px;">${buttons}</div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        function renderPhoneCards() {
+            const keyword = (document.getElementById('may-search').value || '').trim().toLowerCase();
+            const filter = document.getElementById('may-filter').value;
+            const container = document.getElementById('list-phone-cards');
+
+            let list = store.phones;
+            if (filter === 'stock') list = list.filter(p => p.trangthai === 'stock');
+            if (filter === 'sold') list = list.filter(p => p.trangthai === 'sold');
+            if (filter === 'debt') list = list.filter(p => Number(p.noConLai) > 0 || Number(p.khachNo) > 0);
+            if (filter === 'old') list = list.filter(p => p.trangthai === 'stock');
+
+            if (keyword) {
+                list = list.filter(p => (p.imei || '').toLowerCase().includes(keyword) || (p.ten || '').toLowerCase().includes(keyword));
+            }
+
+            if (!list.length) {
+                container.innerHTML = '<p class="empty-text">Không tìm thấy máy nào.</p>';
+                return;
+            }
+
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+
+            let sorted;
+            if (filter === 'old') {
+                sorted = [...list].sort((a, b) => {
+                    const diffA = Math.floor((today - new Date(`${a.ngaynhap}T00:00:00`)) / 86400000);
+                    const diffB = Math.floor((today - new Date(`${b.ngaynhap}T00:00:00`)) / 86400000);
+                    return diffB - diffA;
+                });
+            } else {
+                sorted = [...list].sort((a, b) => (b.ngaynhap || '').localeCompare(a.ngaynhap || ''));
+            }
+
+            let totalProfit = 0;
+            let soldCount = 0;
+            list.forEach(p => {
+                if (p.trangthai === 'sold') {
+                    const von = (Number(p.gianhap) || 0) + (Number(p.chiphi) || 0);
+                    const lai = (Number(p.giaban) || 0) - von;
+                    totalProfit += lai;
+                    soldCount++;
+                }
+            });
+
+            let summaryHtml = '';
+            if (soldCount > 0) {
+                const profitClass = totalProfit >= 0 ? 'text-success' : 'text-danger';
+                const borderColor = totalProfit >= 0 ? 'rgba(48, 209, 88, 0.3)' : 'rgba(255, 69, 58, 0.3)';
+                const bgGradient = totalProfit >= 0 
+                    ? 'linear-gradient(135deg, rgba(48,209,88,0.1), rgba(30,30,35,0.6))' 
+                    : 'linear-gradient(135deg, rgba(255,69,58,0.1), rgba(30,30,35,0.6))';
+                
+                summaryHtml = `
+                    <div class="stat-box" style="margin-bottom:16px; width: 100%; border-color: ${borderColor}; background: ${bgGradient};">
+                        <div class="stat-label">Tổng lãi (${soldCount} máy đã bán)</div>
+                        <div class="stat-value ${profitClass}">${totalProfit >= 0 ? '+' : ''}${formatMoney(totalProfit)}</div>
+                    </div>
+                `;
+            }
+
+            const listHtml = sorted.map(p => {
+                const conNo = Number(p.noConLai) || 0;
+                const khachNo = Number(p.khachNo) || 0;
+                const debtBadge = conNo > 0 ? ` <span class="debt-badge">Nợ ${formatMoney(conNo)}</span>` : '';
+                const khachNoBadge = khachNo > 0 ? ` <span class="debt-badge">KH Nợ ${formatMoney(khachNo)}</span>` : '';
+                const statusText = p.trangthai === 'stock' ? '🟢 Tồn kho' : '🔴 Đã bán';
+                const diffDays = Math.floor((today - new Date(`${p.ngaynhap}T00:00:00`)) / 86400000);
+
+                let actionBtn = '';
+                if (p.trangthai === 'stock') {
+                    actionBtn = `<button class="btn btn-small" onclick="event.stopPropagation(); openSellModal('${p.id}')">Bán</button>`;
+                } else if (khachNo > 0) {
+                    actionBtn = `<button class="btn btn-small btn-success" onclick="event.stopPropagation(); openCollectModal('${p.id}')">Thu nợ</button>`;
+                }
+
+                let detailHtml = '';
+                if (p.trangthai === 'stock') {
+                    detailHtml = `
+                        Vốn: ${formatMoney((Number(p.gianhap) || 0) + (Number(p.chiphi) || 0))}<br>
+                        <span class="text-primary" style="font-size:0.8rem">Đã tồn: ${diffDays} ngày</span>
+                    `;
+                } else {
+                    const von = (Number(p.gianhap) || 0) + (Number(p.chiphi) || 0);
+                    const ban = Number(p.giaban) || 0;
+                    const lai = ban - von;
+                    const laiClass = lai >= 0 ? 'text-success' : 'text-danger';
+                    const laiText = lai >= 0 ? `+${formatMoney(lai)}` : formatMoney(lai);
+                    
+                    const dateBanStr = p.ngayBan ? formatDateTime(p.ngayBan) : 'Không có dữ liệu cũ';
+                    
+                    detailHtml = `
+                        <span style="color:var(--apple-gray);font-size:0.8rem">Bán lúc: ${dateBanStr}</span><br>
+                        Vốn: ${formatMoney(von)} · Bán: <b>${formatMoney(ban)}</b><br>
+                        <span class="${laiClass}" style="font-size:0.85rem;font-weight:600">Lãi: ${laiText}</span>
+                    `;
+                }
+
+                return `<div class="list-item phone-card" onclick="openPhoneDetail('${p.id}')">
+                    <div class="item-info">
+                        <div class="item-title">${escapeHtml(p.ten)} <span>· ${escapeHtml(p.imei)}</span>${debtBadge}${khachNoBadge}</div>
+                        <div class="item-sub">${statusText} · ${escapeHtml(p.tinhtrang)}<br>${detailHtml}</div>
+                    </div>
+                    <div class="item-actions" style="flex-wrap:nowrap">
+                        ${actionBtn}
+                        <button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deletePhone('${p.id}')">Xóa</button>
+                        <div class="arrow">›</div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            container.innerHTML = summaryHtml + listHtml;
+        }
+
+        function openPhoneDetail(id) {
+            const phone = store.phones.find(p => p.id === id);
+            if (!phone) return;
+            
+            if (phone.trangthai === 'sold') {
+                const von = (Number(phone.gianhap) || 0) + (Number(phone.chiphi) || 0);
+                const ban = Number(phone.giaban) || 0;
+                const lai = ban - von;
+                const dateBanStr = phone.ngayBan ? formatDateTime(phone.ngayBan) : 'Không có dữ liệu cũ';
+                
+                let msg = `--- MÁY ĐÃ BÁN ---\n`;
+                msg += `Tên: ${phone.ten}\n`;
+                msg += `Thời gian bán: ${dateBanStr}\n`;
+                msg += `Giá vốn: ${formatMoney(von)}\n`;
+                msg += `Giá bán: ${formatMoney(ban)}\n`;
+                msg += `Lãi/Lỗ: ${lai >= 0 ? '+' : ''}${formatMoney(lai)}\n`;
+                
+                if (phone.khachNo > 0) {
+                    msg += `\nKhách còn nợ: ${formatMoney(phone.khachNo)}\n(Bấm nút "Thu nợ" để thu tiền)`;
+                }
+                alert(msg);
+                return;
+            }
+            openSellModal(id);
+        }
+
+        // ============ BÁN MÁY ============
+        function openSellModal(id) {
+            const phone = store.phones.find(p => p.id === id);
+            if (!phone || phone.trangthai !== 'stock') return;
+            currentSellPhoneId = id;
+            
+            currentSellCostPrice = (Number(phone.gianhap) || 0) + (Number(phone.chiphi) || 0);
+
+            document.getElementById('sell-title').textContent = `Bán: ${phone.ten}`;
+            document.getElementById('sell-sub').innerHTML = 
+                `IMEI: ${escapeHtml(phone.imei) || 'Trống'}<br>
+                <span style="color:var(--text-muted)">Vốn nhập: <b style="color:var(--apple-blue);font-size:1.1rem">${formatMoney(currentSellCostPrice)}</b></span>`;
+
+            document.getElementById('sell-giaban').value = '';
+            document.getElementById('sell-tra-truoc').value = '';
+            document.getElementById('sell-con-no').textContent = '0';
+            
+            document.getElementById('sell-profit-box').style.display = 'none';
+
+            selectSellMethod(document.querySelector('#sell-method-group .method-option[data-method="Tiền mặt"]'));
+            document.getElementById('sell-modal').classList.add('show');
+            setTimeout(() => document.getElementById('sell-giaban').focus(), 200);
+        }
+
+        function closeSellModal() { document.getElementById('sell-modal').classList.remove('show'); currentSellPhoneId = null; }
+        function selectSellMethod(el) { document.querySelectorAll('#sell-method-group .method-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
+        
+        function updateSellRemaining() {
+            const giaban = (Number(document.getElementById('sell-giaban').value) || 0) * 1000;
+            const traTruocStr = document.getElementById('sell-tra-truoc').value;
+            const traTruoc = traTruocStr === '' ? giaban : (Number(traTruocStr) || 0) * 1000;
+            
+            document.getElementById('sell-con-no').textContent = formatMoney(Math.max(0, giaban - traTruoc));
+
+            const profitBox = document.getElementById('sell-profit-box');
+            const profitVal = document.getElementById('sell-profit-val');
+            
+            if (giaban > 0) {
+                profitBox.style.display = 'block';
+                const lai = giaban - currentSellCostPrice;
+                
+                if (lai > 0) {
+                    profitBox.style.background = 'rgba(48, 209, 88, 0.1)';
+                    profitBox.style.border = '1px solid rgba(48, 209, 88, 0.3)';
+                    profitVal.className = 'text-success';
+                    profitVal.textContent = `+${formatMoney(lai)}`;
+                } else if (lai < 0) {
+                    profitBox.style.background = 'rgba(255, 69, 58, 0.1)';
+                    profitBox.style.border = '1px solid rgba(255, 69, 58, 0.3)';
+                    profitVal.className = 'text-danger';
+                    profitVal.textContent = formatMoney(lai);
+                } else {
+                    profitBox.style.background = 'rgba(255, 255, 255, 0.05)';
+                    profitBox.style.border = '1px solid var(--glass-border)';
+                    profitVal.className = 'text-main';
+                    profitVal.textContent = '0';
+                }
+            } else {
+                profitBox.style.display = 'none';
+            }
+        }
+
+        function confirmSell() {
+            const phone = store.phones.find(p => p.id === currentSellPhoneId);
+            if (!phone) return;
+            const giaban = (Number(document.getElementById('sell-giaban').value) || 0) * 1000;
+            if (giaban <= 0) return showToast('Vui lòng nhập giá bán > 0', true);
+
+            const traTruocStr = document.getElementById('sell-tra-truoc').value;
+            const traTruoc = traTruocStr === '' ? giaban : (Number(traTruocStr) || 0) * 1000;
+            if (traTruoc < 0 || traTruoc > giaban) return showToast('Số tiền khách trả không hợp lệ', true);
+
+            const conNo = giaban - traTruoc;
+            const method = document.querySelector('#sell-method-group .method-option.selected').dataset.method;
+
+            phone.trangthai = 'sold'; 
+            phone.giaban = giaban; 
+            phone.khachNo = conNo; 
+            phone.hinhthucBan = method;
+            phone.ngayBan = new Date().toISOString();
+
+            if (traTruoc > 0) {
+                store.transactions.push({
+                    id: generateId(), 
+                    ngay: localDateString(), 
+                    thoiGian: new Date().toISOString(), // Thêm thời gian
+                    loai: 'Thu', 
+                    danhmuc: 'Bán máy',
+                    noidung: `Bán ${phone.ten}${conNo > 0 ? ` (KH nợ ${formatMoney(conNo)})` : ''}`,
+                    sotien: traTruoc, 
+                    hinhthuc: method, 
+                    phoneId: phone.id
+                });
+            }
+
+            saveData(); renderAll(); closeSellModal();
+            showToast(`Đã bán máy! Thu ${formatMoney(traTruoc)} (${method})`);
+        }
+
+        // ============ TRẢ NỢ NCC ============
+        function openPayModal(id) {
+            const phone = store.phones.find(p => p.id === id);
+            if (!phone || Number(phone.noConLai) <= 0) return;
+            currentPayPhoneId = id;
+            document.getElementById('pay-title').textContent = `Trả nợ: ${phone.ten}`;
+            document.getElementById('pay-sub').textContent = `Nợ NCC còn lại: ${formatMoney(phone.noConLai)}`;
+            document.getElementById('pay-sotien').value = String(phone.noConLai / 1000);
+            selectPayMethod(document.querySelector('#pay-method-group .method-option[data-method="Tiền mặt"]'));
+            document.getElementById('pay-modal').classList.add('show');
+            setTimeout(() => document.getElementById('pay-sotien').focus(), 200);
+        }
+
+        function closePayModal() { document.getElementById('pay-modal').classList.remove('show'); currentPayPhoneId = null; }
+        function selectPayMethod(el) { document.querySelectorAll('#pay-method-group .method-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
+
+        function confirmPay() {
+            const phone = store.phones.find(p => p.id === currentPayPhoneId);
+            if (!phone) return;
+            const soTien = (Number(document.getElementById('pay-sotien').value) || 0) * 1000;
+            const conLai = Number(phone.noConLai) || 0;
+            
+            if (soTien <= 0 || soTien > conLai) return showToast('Số tiền trả không hợp lệ', true);
+
+            const method = document.querySelector('#pay-method-group .method-option.selected').dataset.method;
+            phone.noConLai = conLai - soTien;
+
+            store.transactions.push({
+                id: generateId(), 
+                ngay: localDateString(), 
+                thoiGian: new Date().toISOString(), // Thêm thời gian
+                loai: 'Chi', 
+                danhmuc: 'Trả nợ NCC',
+                noidung: `Trả nợ ${phone.ten}`, 
+                sotien: soTien, 
+                hinhthuc: method, 
+                phoneId: phone.id
+            });
+
+            saveData(); renderAll(); closePayModal();
+            showToast(`Đã chi ${formatMoney(soTien)} (${method}). Còn nợ: ${formatMoney(phone.noConLai)}`);
+            
+            const tcTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-thuchi"]');
+            if(tcTabButton) {
+                switchTab('tab-thuchi', tcTabButton);
+                document.getElementById('tc-filter-type').value = 'all'; // Reset bộ lọc
+                document.getElementById('tc-filter-month').value = localDateString().slice(0, 7);
+                renderTransactions();
+            }
+        }
+
+        // ============ THU NỢ KHÁCH ============
+        function openCollectModal(id) {
+            const phone = store.phones.find(p => p.id === id);
+            if (!phone || Number(phone.khachNo) <= 0) return;
+            currentCollectPhoneId = id;
+            document.getElementById('collect-title').textContent = `Thu nợ: ${phone.ten}`;
+            document.getElementById('collect-sub').textContent = `Khách còn nợ: ${formatMoney(phone.khachNo)}`;
+            document.getElementById('collect-sotien').value = String(phone.khachNo / 1000);
+            selectCollectMethod(document.querySelector('#collect-method-group .method-option[data-method="Tiền mặt"]'));
+            document.getElementById('collect-modal').classList.add('show');
+            setTimeout(() => document.getElementById('collect-sotien').focus(), 200);
+        }
+
+        function closeCollectModal() { document.getElementById('collect-modal').classList.remove('show'); currentCollectPhoneId = null; }
+        function selectCollectMethod(el) { document.querySelectorAll('#collect-method-group .method-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
+
+        function confirmCollect() {
+            const phone = store.phones.find(p => p.id === currentCollectPhoneId);
+            if (!phone) return;
+            const soTien = (Number(document.getElementById('collect-sotien').value) || 0) * 1000;
+            const khachNo = Number(phone.khachNo) || 0;
+            
+            if (soTien <= 0 || soTien > khachNo) return showToast('Số tiền thu không hợp lệ', true);
+
+            const method = document.querySelector('#collect-method-group .method-option.selected').dataset.method;
+            phone.khachNo = khachNo - soTien;
+
+            store.transactions.push({
+                id: generateId(), 
+                ngay: localDateString(), 
+                thoiGian: new Date().toISOString(), // Thêm thời gian
+                loai: 'Thu', 
+                danhmuc: 'Thu nợ khách',
+                noidung: `Thu nợ ${phone.ten}`, 
+                sotien: soTien, 
+                hinhthuc: method, 
+                phoneId: phone.id
+            });
+
+            saveData(); renderAll(); closeCollectModal();
+            showToast(`Đã thu ${formatMoney(soTien)} (${method}). KH còn nợ: ${formatMoney(phone.khachNo)}`);
+            
+            const tcTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-thuchi"]');
+            if(tcTabButton) {
+                switchTab('tab-thuchi', tcTabButton);
+                document.getElementById('tc-filter-type').value = 'all'; // Reset bộ lọc
+                document.getElementById('tc-filter-month').value = localDateString().slice(0, 7);
+                renderTransactions();
+            }
+        }
+
+        // ============ NHẬP MÁY MỚI ============
+        function addPhone() {
+            const ten = document.getElementById('km-ten').value.trim();
+            const imei = document.getElementById('km-imei').value.trim();
+            const tinhtrang = document.getElementById('km-tinhtrang').value;
+            const ngaynhap = document.getElementById('km-ngaynhap').value;
+            const gianhap = (Number(document.getElementById('km-gianhap').value) || 0) * 1000;
+            const chiphi = (Number(document.getElementById('km-chiphisua').value) || 0) * 1000;
+            const hinhthuc = document.getElementById('km-hinhthuc').value;
+
+            if (!ten || !ngaynhap) return showToast('Vui lòng nhập Tên máy và Ngày', true);
+            if (imei && store.phones.some(p => p.imei && p.imei.toLowerCase() === imei.toLowerCase())) return showToast('IMEI đã tồn tại!', true);
+
+            const tongVon = gianhap + chiphi;
+            const newPhone = {
+                id: generateId(), ten, imei, tinhtrang, ngaynhap, gianhap, chiphi, hinhthuc,
+                trangthai: 'stock', giaban: 0,
+                noBanDau: hinhthuc === 'Nợ' ? tongVon : 0,
+                noConLai: hinhthuc === 'Nợ' ? tongVon : 0,
+                khachNo: 0, hinhthucBan: '', ngayBan: ''
+            };
+            store.phones.push(newPhone);
+
+            if (tongVon > 0 && hinhthuc !== 'Nợ') {
+                const now = new Date();
+                const [year, month, day] = ngaynhap.split('-');
+                const selectedDate = new Date(year, month - 1, day);
+                if (localDateString(selectedDate) === localDateString()) {
+                    selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+                }
+
+                store.transactions.push({
+                    id: generateId(), 
+                    ngay: ngaynhap, 
+                    thoiGian: selectedDate.toISOString(), // Gán thời gian
+                    loai: 'Chi', 
+                    danhmuc: 'Nhập máy',
+                    noidung: ten, 
+                    sotien: tongVon, 
+                    hinhthuc: hinhthuc, 
+                    phoneId: newPhone.id
+                });
+            }
+
+            saveData(); renderAll();
+            document.getElementById('km-ten').value = ''; document.getElementById('km-imei').value = '';
+            document.getElementById('km-gianhap').value = ''; document.getElementById('km-chiphisua').value = '';
+            showToast('Đã thêm máy vào kho!');
+        }
+
+        function deletePhone(id) {
+            if (!confirm('Xóa máy này? Lịch sử thu chi sẽ được giữ lại.')) return;
+            store.phones = store.phones.filter(p => p.id !== id);
+            saveData(); renderAll();
+        }
+
+        // ============ THU CHI ============
+        function updateCategories() {
+            const loai = document.getElementById('tc-loai').value;
+            const select = document.getElementById('tc-danhmuc');
+            const options = loai === 'Thu'
+                ? ['Bán máy', 'Thu nợ khách', 'Sửa chữa', 'Bán phụ kiện', 'Thu khác']
+                : ['Nhập máy', 'Dụng cụ - thiết bị', 'Sửa chữa', 'Trả nợ NCC', 'Chi khác'];
+            select.innerHTML = options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+        }
+
+        function updateMonthFilter() {
+            const select = document.getElementById('tc-filter-month');
+            const current = select.value || 'all';
+            const months = [...new Set(store.transactions.map(t => (t.ngay || '').slice(0, 7)).filter(Boolean))].sort().reverse();
+            select.innerHTML = '<option value="all">Tất cả tháng</option>' + months.map(m => `<option value="${m}">${m.slice(5, 7)}/${m.slice(0, 4)}</option>`).join('');
+            select.value = months.includes(current) || current === 'all' ? current : 'all';
+        }
+
+        function addTransaction() {
+            const ngay = document.getElementById('tc-ngay').value;
+            const loai = document.getElementById('tc-loai').value;
+            const danhmuc = document.getElementById('tc-danhmuc').value;
+            const noidung = document.getElementById('tc-noidung').value.trim();
+            const sotien = (Number(document.getElementById('tc-sotien').value) || 0) * 1000;
+            const hinhthuc = document.getElementById('tc-hinhthuc').value;
+            
+            if (!ngay || sotien <= 0) return showToast('Vui lòng nhập Ngày và Số tiền > 0', true);
+
+            // Tính toán thời gian thực tế
+            const now = new Date();
+            const [year, month, day] = ngay.split('-');
+            const selectedDate = new Date(year, month - 1, day);
+            if (localDateString(selectedDate) === localDateString()) {
+                selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+            }
+
+            store.transactions.push({ 
+                id: generateId(), 
+                ngay, 
+                thoiGian: selectedDate.toISOString(), // Lưu thời gian chi tiết
+                loai, 
+                danhmuc, 
+                noidung, 
+                sotien, 
+                hinhthuc 
+            });
+            
+            saveData(); renderAll();
+            document.getElementById('tc-noidung').value = ''; document.getElementById('tc-sotien').value = '';
+            showToast('Đã lưu giao dịch!');
+        }
+
+        function renderTransactions() {
+            updateMonthFilter();
+            const container = document.getElementById('list-transactions');
+            const summaryEl = document.getElementById('tc-summary');
+            const month = document.getElementById('tc-filter-month').value;
+            const type = document.getElementById('tc-filter-type').value; // Lấy giá trị bộ lọc Loại
+
+            // Lọc theo tháng và loại (Thu/Chi)
+            const transactions = store.transactions.filter(t => {
+                const matchMonth = (month === 'all' || (t.ngay || '').startsWith(month));
+                const matchType = (type === 'all' || t.loai === type);
+                return matchMonth && matchType;
+            });
+
+            if (!transactions.length) {
+                container.innerHTML = '<p class="empty-text">Chưa có giao dịch nào.</p>';
+                summaryEl.textContent = 'Thu 0 · Chi 0 · Chênh lệch 0';
+                return;
+            }
+
+            // Sắp xếp mới nhất lên đầu (ưu tiên thoiGian, fallback ngay)
+            const sorted = [...transactions].sort((a, b) => {
+                const timeA = a.thoiGian || a.ngay;
+                const timeB = b.thoiGian || b.ngay;
+                return timeB.localeCompare(timeA);
+            });
+
+            let sumThu = 0, sumChi = 0;
+            
+            container.innerHTML = sorted.map(t => {
+                const isThu = t.loai === 'Thu';
+                const amount = Number(t.sotien) || 0;
+                if (isThu) sumThu += amount; else sumChi += amount;
+                
+                const timeDisplay = formatTransactionDateTime(t); // Gọi hàm format ngày giờ mới
+
+                return `<div class="list-item">
+                    <div class="item-info">
+                        <div class="item-title">${escapeHtml(t.danhmuc)}</div>
+                        <div class="item-sub">${timeDisplay} · ${escapeHtml(t.hinhthuc)} ${t.noidung ? '· ' + escapeHtml(t.noidung) : ''}</div>
+                    </div>
+                    <div class="item-actions">
+                        <span class="amount ${isThu ? 'text-success' : 'text-danger'}">${isThu ? '+' : '-'}${formatMoney(amount)}</span>
+                        <button class="btn btn-small btn-danger" style="padding:6px 10px;" onclick="deleteTransaction('${t.id}')">✕</button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const diff = sumThu - sumChi;
+            summaryEl.innerHTML = `Thu ${formatMoney(sumThu)} · Chi ${formatMoney(sumChi)} · Chênh lệch <span class="${diff >= 0 ? 'text-success' : 'text-danger'}">${formatMoney(diff)}</span>`;
+        }
+
+        function deleteTransaction(id) {
+            if (!confirm('Xóa giao dịch này?')) return;
+            store.transactions = store.transactions.filter(t => t.id !== id);
+            saveData(); renderAll();
+        }
+
+        // ============ BACKUP ============
+        function backupData() {
+            const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `backup_glass_${localDateString()}.json`;
+            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+            showToast('Đã tải file sao lưu!');
+        }
+
+        function restoreData(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (!parsed || !Array.isArray(parsed.phones) || !Array.isArray(parsed.transactions)) {
+                        showToast('File sai định dạng!', true); return;
+                    }
+                    if (confirm('Dữ liệu hiện tại sẽ bị GHI ĐÈ. Tiếp tục?')) {
+                        store = { phones: parsed.phones, transactions: parsed.transactions, settings: parsed.settings || { alertDays: 30 } };
+                        saveData(); loadData(); renderAll();
+                        showToast('Khôi phục thành công!');
+                    }
+                } catch (err) { showToast('Lỗi đọc file!', true); }
+                finally { event.target.value = ''; }
+            };
+            reader.readAsText(file);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initData();
+            loadData();
+            updateCategories();
+            renderAll();
+            startAutoBackup();
+        });
+    </script>
+</body>
+</html>
