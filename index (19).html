@@ -1,4 +1,4 @@
-HoangLong Design
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -9,17 +9,13 @@ HoangLong Design
             --bg-color: #050505;
             --glass-bg: rgba(30, 30, 35, 0.6);
             --glass-border: rgba(255, 255, 255, 0.12);
-            --glass-highlight: rgba(255, 255, 255, 0.05);
-            
             --apple-blue: #0A84FF;
             --apple-green: #30D158;
             --apple-red: #FF453A;
             --apple-orange: #FF9F0A;
             --apple-gray: #8E8E93;
-            
             --text-main: #FFFFFF;
             --text-muted: rgba(255, 255, 255, 0.6);
-            
             --radius-lg: 24px;
             --radius-md: 16px;
             --radius-sm: 10px;
@@ -44,7 +40,6 @@ HoangLong Design
             overflow-x: hidden;
         }
 
-        /* Background Blobs cho hiệu ứng kính */
         .bg-blob {
             position: fixed;
             border-radius: 50%;
@@ -62,7 +57,6 @@ HoangLong Design
             100% { transform: translate(30px, 50px) scale(1.1); }
         }
 
-        /* Tiêu đề */
         h1 {
             font-size: 1.4rem;
             font-weight: 700;
@@ -128,10 +122,9 @@ HoangLong Design
             font-weight: 700;
         }
 
-        /* Thanh Tabs */
         .tabs {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             margin-bottom: 24px;
             background: rgba(255, 255, 255, 0.05);
             padding: 6px;
@@ -139,19 +132,22 @@ HoangLong Design
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            overflow-x: auto;
         }
 
         .tab-btn {
             flex: 1;
+            min-width: 0;
             background: transparent;
             border: none;
             color: var(--text-muted);
             padding: 10px 4px;
             border-radius: var(--radius-sm);
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            white-space: nowrap;
         }
 
         .tab-btn.active {
@@ -161,7 +157,6 @@ HoangLong Design
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
-        /* Khung kính (Panel) */
         .panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -183,7 +178,6 @@ HoangLong Design
             gap: 8px;
         }
 
-        /* Form inputs */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -228,7 +222,6 @@ HoangLong Design
         input::placeholder { color: rgba(255, 255, 255, 0.3); }
         select option { background: #1c1c1e; color: #fff; }
 
-        /* Buttons */
         .btn {
             background: var(--apple-blue);
             color: #fff;
@@ -245,7 +238,7 @@ HoangLong Design
         }
 
         .btn:active { transform: scale(0.97); }
-        
+
         .btn-outline {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
@@ -258,10 +251,9 @@ HoangLong Design
         .btn-danger { background: rgba(255, 69, 58, 0.15); border: 1px solid rgba(255, 69, 58, 0.3); color: var(--apple-red); box-shadow: none; }
         .btn-warning { background: rgba(255, 159, 10, 0.15); border: 1px solid rgba(255, 159, 10, 0.3); color: var(--apple-orange); box-shadow: none; }
         .btn-success { background: rgba(48, 209, 88, 0.15); border: 1px solid rgba(48, 209, 88, 0.3); color: var(--apple-green); box-shadow: none; }
-        
+
         .btn-small { padding: 8px 14px; width: auto; font-size: 0.85rem; border-radius: var(--radius-sm); }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -290,7 +282,6 @@ HoangLong Design
         .text-primary { color: var(--apple-blue); }
         .text-warning { color: var(--apple-orange); }
 
-        /* Danh sách */
         .list-item {
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 16px 0;
@@ -325,6 +316,23 @@ HoangLong Design
             font-weight: 600;
         }
 
+        .stock-badge {
+            background: rgba(48, 209, 88, 0.15);
+            color: var(--apple-green);
+            border: 1px solid rgba(48, 209, 88, 0.3);
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .stock-badge.out {
+            background: rgba(255, 69, 58, 0.15);
+            color: var(--apple-red);
+            border-color: rgba(255, 69, 58, 0.3);
+        }
+
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -334,7 +342,6 @@ HoangLong Design
         .search-box input { padding-left: 40px; border-radius: var(--radius-md); }
         .search-box::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.6; }
 
-        /* Modals */
         .modal-backdrop {
             display: none; position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.6);
@@ -374,7 +381,6 @@ HoangLong Design
             box-shadow: inset 0 0 10px rgba(10, 132, 255, 0.2);
         }
 
-        /* Toast Notification */
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
             background: rgba(48, 209, 88, 0.9); color: #fff; padding: 12px 24px;
@@ -382,12 +388,12 @@ HoangLong Design
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000;
-            pointer-events: none; white-space: nowrap;
+            pointer-events: none; white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis;
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         @media (max-width: 420px) {
-            .tab-btn { font-size: 0.85rem; padding: 8px 2px; }
+            .tab-btn { font-size: 0.72rem; padding: 8px 2px; }
             .stat-value { font-size: 1.15rem; }
             .btn-small { padding: 6px 10px; }
             .realtime-clock .clock-time { font-size: 1.8rem; }
@@ -400,11 +406,10 @@ HoangLong Design
     <div class="bg-blob blob-3"></div>
 
     <h1>
-        <span>Cửa hàng điện thoại SAMMOBILE</span>
+        <span>Cửa hàng điện thoại</span>
         <span class="backup-countdown" id="backup-countdown" aria-live="polite">⏱ --:--</span>
     </h1>
 
-    <!-- === ĐỒNG HỒ THỜI GIAN THỰC === -->
     <div class="realtime-clock">
         <div class="clock-time" id="clock-time">--:--:--</div>
         <div class="clock-date" id="clock-date">Đang tải...</div>
@@ -414,6 +419,7 @@ HoangLong Design
         <button class="tab-btn active" onclick="switchTab('tab-tongquan', this)">Tổng quan</button>
         <button class="tab-btn" onclick="switchTab('tab-may', this)">DS máy</button>
         <button class="tab-btn" onclick="switchTab('tab-khomay', this)">Nhập máy</button>
+        <button class="tab-btn" onclick="switchTab('tab-sua-chua', this)">Sửa chữa</button>
         <button class="tab-btn" onclick="switchTab('tab-thuchi', this)">Thu chi</button>
     </div>
 
@@ -431,7 +437,7 @@ HoangLong Design
                 <div class="stat-label">🏦 Tài khoản</div>
                 <div class="stat-value" id="ov-chuyenkhoan">0</div>
             </div>
-            
+
             <div class="stat-box" style="border-color: rgba(255,159,10,0.3); background: linear-gradient(135deg, rgba(255,159,10,0.1), rgba(30,30,35,0.6));">
                 <div class="stat-label text-warning">📝 Nợ NCC (cần trả)</div>
                 <div class="stat-value text-warning" id="ov-tongno">0</div>
@@ -440,7 +446,7 @@ HoangLong Design
                 <div class="stat-label text-warning">💸 Khách nợ (cần thu)</div>
                 <div class="stat-value text-warning" id="ov-khachno">0</div>
             </div>
-            
+
             <div class="stat-box clickable" onclick="openStockFromOverview()">
                 <div class="stat-label text-primary">Máy tồn kho (Xem)</div>
                 <div class="stat-value" id="ov-mayton">0 chiếc</div>
@@ -449,12 +455,12 @@ HoangLong Design
                 <div class="stat-label">Vốn trong kho</div>
                 <div class="stat-value" id="ov-vontonkho">0</div>
             </div>
-            
+
             <div class="stat-box clickable" onclick="openSoldFromOverview()">
                 <div class="stat-label text-primary">Máy đã bán (Xem)</div>
                 <div class="stat-value" id="ov-maydaban">0 chiếc</div>
             </div>
-            
+
             <div class="stat-box">
                 <div class="stat-label">Lãi máy đã bán</div>
                 <div class="stat-value text-success" id="ov-laimay">0</div>
@@ -526,6 +532,60 @@ HoangLong Design
         </div>
     </div>
 
+    <div id="tab-sua-chua" class="tab-content">
+        <div class="panel">
+            <div class="panel-title">📦 Kho linh kiện</div>
+            <div class="search-box">
+                <input type="text" id="lk-search" placeholder="Tìm linh kiện hoặc dòng máy..." oninput="renderParts()">
+            </div>
+            <div id="list-parts"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Nhập linh kiện</div>
+            <div class="form-group"><label>Tên linh kiện</label><input type="text" id="lk-ten" placeholder="VD: Màn hình zin"></div>
+            <div class="form-group"><label>Dòng máy</label><input type="text" id="lk-dongmay" placeholder="VD: iPhone 11"></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Số lượng</label><input type="number" id="lk-soluong" min="1" placeholder="VD: 5"></div>
+                <div class="form-group"><label>Giá nhập (K)</label><input type="number" id="lk-gianhap" min="0" placeholder="VD: 500"></div>
+            </div>
+            <div class="form-group"><label>Giá bán (K)</label><input type="number" id="lk-giaban" min="0" placeholder="VD: 800"></div>
+            <div class="form-group">
+                <label>Hình thức chi tiền</label>
+                <select id="lk-hinhthuc">
+                    <option value="Tiền mặt">💵 Tiền mặt</option>
+                    <option value="Chuyển khoản">🏦 Chuyển khoản</option>
+                </select>
+            </div>
+            <button class="btn" onclick="addPart()">Lưu linh kiện</button>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">🔧 Xuất linh kiện & Thu tiền sửa</div>
+            <div class="form-group">
+                <label>Chọn linh kiện</label>
+                <select id="lk-xuat-id" onchange="updateExportInfo()"></select>
+            </div>
+            <div id="lk-export-info" class="item-sub" style="margin-bottom:14px;min-height:20px;"></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Số lượng xuất</label><input type="number" id="lk-xuat-sl" min="1" value="1" oninput="updateExportTotal()"></div>
+                <div class="form-group"><label>Đơn giá bán (K)</label><input type="number" id="lk-xuat-gia" min="0" oninput="updateExportTotal()"></div>
+            </div>
+            <div class="form-group"><label>Tên khách (tùy chọn)</label><input type="text" id="lk-xuat-khach" placeholder="VD: Anh Nam"></div>
+            <div class="form-group">
+                <label>Hình thức thu</label>
+                <select id="lk-xuat-hinhthuc">
+                    <option value="Tiền mặt">💵 Tiền mặt</option>
+                    <option value="Chuyển khoản">🏦 Chuyển khoản</option>
+                </select>
+            </div>
+            <div class="item-sub" style="padding:14px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);text-align:center;margin-bottom:14px;">
+                Tổng thu: <b id="lk-xuat-tong" class="text-success" style="font-size:1.1rem">0</b>
+            </div>
+            <button class="btn btn-success" onclick="exportPart()">Xuất & Thu tiền</button>
+        </div>
+    </div>
+
     <div id="tab-thuchi" class="tab-content">
         <div class="panel">
             <div class="panel-title">Ghi thu / chi</div>
@@ -566,16 +626,13 @@ HoangLong Design
         <div class="modal">
             <h3 id="sell-title">Bán máy</h3>
             <p class="sub" id="sell-sub"></p>
-            
             <div class="form-group">
                 <label>Giá bán (K)</label>
                 <input type="number" id="sell-giaban" min="0" placeholder="VD: 10000" oninput="updateSellRemaining()">
             </div>
-
             <div id="sell-profit-box" class="item-sub" style="display:none; padding:12px; margin-bottom:12px; border-radius:var(--radius-sm); text-align:center; transition: all 0.3s;">
                 Dự kiến: <b id="sell-profit-val" style="font-size:1.1rem">0</b>
             </div>
-
             <div class="form-group">
                 <label>Hình thức thu tiền</label>
                 <div class="method-group" id="sell-method-group">
@@ -583,7 +640,6 @@ HoangLong Design
                     <div class="method-option" data-method="Chuyển khoản" onclick="selectSellMethod(this)">🏦 Chuyển khoản</div>
                 </div>
             </div>
-            
             <div class="form-group">
                 <label>Khách trả trước (K)</label>
                 <input type="number" id="sell-tra-truoc" min="0" placeholder="Để trống = trả đủ" oninput="updateSellRemaining()">
@@ -647,8 +703,8 @@ HoangLong Design
     <div id="toast" class="toast">Thành công!</div>
 
     <script>
-        let store = { phones: [], transactions: [], settings: { alertDays: 30 } };
-        const STORAGE_KEY = 'phone_shop_glass_v2'; 
+        let store = { phones: [], transactions: [], parts: [], settings: { alertDays: 30 } };
+        const STORAGE_KEY = 'phone_shop_glass_v2';
         const AUTO_BACKUP_KEY = 'phone_shop_auto_backup_v1';
         const AUTO_BACKUP_TIME_KEY = 'phone_shop_auto_backup_time_v1';
         const AUTO_BACKUP_INTERVAL = 30 * 60 * 1000;
@@ -666,6 +722,7 @@ HoangLong Design
                 store.transactions = [
                     { id: 't1', ngay: '2026-11-10', thoiGian: new Date().toISOString(), loai: 'Chi', danhmuc: 'Nhập máy', noidung: 'iPhone 13 Pro Max', sotien: 15000000, hinhthuc: 'Tiền mặt' }
                 ];
+                store.parts = [];
                 saveData();
             }
         }
@@ -758,6 +815,7 @@ HoangLong Design
                     const parsed = JSON.parse(data);
                     store.phones = Array.isArray(parsed.phones) ? parsed.phones : [];
                     store.transactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
+                    store.parts = Array.isArray(parsed.parts) ? parsed.parts : [];
                     store.settings = parsed.settings || { alertDays: 30 };
                 } catch (e) { console.error('Lỗi đọc dữ liệu', e); }
             }
@@ -806,7 +864,6 @@ HoangLong Design
             }, 1000);
         }
 
-        // === ĐỒNG HỒ THỜI GIAN THỰC ===
         function updateRealtimeClock() {
             const now = new Date();
             const hh = String(now.getHours()).padStart(2, '0');
@@ -860,12 +917,15 @@ HoangLong Design
             if (tabId === 'tab-tongquan') renderOverview();
             if (tabId === 'tab-may') renderPhoneCards();
             if (tabId === 'tab-thuchi') renderTransactions();
+            if (tabId === 'tab-sua-chua') { renderParts(); refreshPartDropdown(); }
         }
 
         function renderAll() {
             renderOverview();
             renderPhoneCards();
             renderTransactions();
+            renderParts();
+            refreshPartDropdown();
             updateCategories();
         }
 
@@ -988,8 +1048,8 @@ HoangLong Design
             if (soldCount > 0) {
                 const profitClass = totalProfit >= 0 ? 'text-success' : 'text-danger';
                 const borderColor = totalProfit >= 0 ? 'rgba(48, 209, 88, 0.3)' : 'rgba(255, 69, 58, 0.3)';
-                const bgGradient = totalProfit >= 0 
-                    ? 'linear-gradient(135deg, rgba(48,209,88,0.1), rgba(30,30,35,0.6))' 
+                const bgGradient = totalProfit >= 0
+                    ? 'linear-gradient(135deg, rgba(48,209,88,0.1), rgba(30,30,35,0.6))'
                     : 'linear-gradient(135deg, rgba(255,69,58,0.1), rgba(30,30,35,0.6))';
                 summaryHtml = `
                     <div class="stat-box" style="margin-bottom:16px; width: 100%; border-color: ${borderColor}; background: ${bgGradient};">
@@ -1071,7 +1131,6 @@ HoangLong Design
             openSellModal(id);
         }
 
-        // ============ BÁN MÁY ============
         function openSellModal(id) {
             const phone = store.phones.find(p => p.id === id);
             if (!phone || phone.trangthai !== 'stock') return;
@@ -1079,7 +1138,7 @@ HoangLong Design
             currentSellCostPrice = (Number(phone.gianhap) || 0) + (Number(phone.chiphi) || 0);
 
             document.getElementById('sell-title').textContent = `Bán: ${phone.ten}`;
-            document.getElementById('sell-sub').innerHTML = 
+            document.getElementById('sell-sub').innerHTML =
                 `IMEI: ${escapeHtml(phone.imei) || 'Trống'}<br>
                 <span style="color:var(--text-muted)">Vốn nhập: <b style="color:var(--apple-blue);font-size:1.1rem">${formatMoney(currentSellCostPrice)}</b></span>`;
 
@@ -1095,7 +1154,7 @@ HoangLong Design
 
         function closeSellModal() { document.getElementById('sell-modal').classList.remove('show'); currentSellPhoneId = null; }
         function selectSellMethod(el) { document.querySelectorAll('#sell-method-group .method-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
-        
+
         function updateSellRemaining() {
             const giaban = (Number(document.getElementById('sell-giaban').value) || 0) * 1000;
             const traTruocStr = document.getElementById('sell-tra-truoc').value;
@@ -1104,7 +1163,7 @@ HoangLong Design
 
             const profitBox = document.getElementById('sell-profit-box');
             const profitVal = document.getElementById('sell-profit-val');
-            
+
             if (giaban > 0) {
                 profitBox.style.display = 'block';
                 const lai = giaban - currentSellCostPrice;
@@ -1142,9 +1201,9 @@ HoangLong Design
             const conNo = giaban - traTruoc;
             const method = document.querySelector('#sell-method-group .method-option.selected').dataset.method;
 
-            phone.trangthai = 'sold'; 
-            phone.giaban = giaban; 
-            phone.khachNo = conNo; 
+            phone.trangthai = 'sold';
+            phone.giaban = giaban;
+            phone.khachNo = conNo;
             phone.hinhthucBan = method;
             phone.ngayBan = new Date().toISOString();
 
@@ -1161,7 +1220,6 @@ HoangLong Design
             showToast(`Đã bán máy! Thu ${formatMoney(traTruoc)} (${method})`);
         }
 
-        // ============ TRẢ NỢ NCC ============
         function openPayModal(id) {
             const phone = store.phones.find(p => p.id === id);
             if (!phone || Number(phone.noConLai) <= 0) return;
@@ -1205,7 +1263,6 @@ HoangLong Design
             }
         }
 
-        // ============ THU NỢ KHÁCH ============
         function openCollectModal(id) {
             const phone = store.phones.find(p => p.id === id);
             if (!phone || Number(phone.khachNo) <= 0) return;
@@ -1249,7 +1306,6 @@ HoangLong Design
             }
         }
 
-        // ============ NHẬP MÁY MỚI ============
         function addPhone() {
             const ten = document.getElementById('km-ten').value.trim();
             const imei = document.getElementById('km-imei').value.trim();
@@ -1300,13 +1356,167 @@ HoangLong Design
             saveData(); renderAll();
         }
 
+        // ============ SỬA CHỮA / LINH KIỆN ============
+        function renderParts() {
+            const keyword = (document.getElementById('lk-search').value || '').trim().toLowerCase();
+            const container = document.getElementById('list-parts');
+            let list = store.parts || [];
+            if (keyword) {
+                list = list.filter(p =>
+                    (p.ten || '').toLowerCase().includes(keyword) ||
+                    (p.dongmay || '').toLowerCase().includes(keyword)
+                );
+            }
+            if (!list.length) {
+                container.innerHTML = '<p class="empty-text">Chưa có linh kiện nào.</p>';
+                return;
+            }
+            container.innerHTML = list.map(p => {
+                const sl = Number(p.soluong) || 0;
+                const stockClass = sl > 0 ? 'stock-badge' : 'stock-badge out';
+                return `<div class="list-item">
+                    <div class="item-info">
+                        <div class="item-title">${escapeHtml(p.ten)} <span>· ${escapeHtml(p.dongmay)}</span></div>
+                        <div class="item-sub">
+                            Nhập: ${formatMoney(p.gianhap)} · Bán: <b>${formatMoney(p.giaban)}</b><br>
+                            Tồn: <span class="${stockClass}">${sl} cái</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-small btn-danger" onclick="deletePart('${p.id}')">Xóa</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function refreshPartDropdown() {
+            const select = document.getElementById('lk-xuat-id');
+            if (!select) return;
+            const prevValue = select.value;
+            const parts = (store.parts || []).filter(p => Number(p.soluong) > 0);
+            if (!parts.length) {
+                select.innerHTML = '<option value="">-- Không có linh kiện trong kho --</option>';
+            } else {
+                select.innerHTML = '<option value="">-- Chọn linh kiện --</option>' +
+                    parts.map(p => `<option value="${p.id}">${escapeHtml(p.ten)} · ${escapeHtml(p.dongmay)} (Tồn: ${p.soluong})</option>`).join('');
+                if (parts.some(p => p.id === prevValue)) select.value = prevValue;
+            }
+            updateExportInfo();
+        }
+
+        function updateExportInfo() {
+            const id = document.getElementById('lk-xuat-id').value;
+            const info = document.getElementById('lk-export-info');
+            const part = (store.parts || []).find(p => p.id === id);
+            if (!part) {
+                info.innerHTML = '';
+                document.getElementById('lk-xuat-gia').value = '';
+                document.getElementById('lk-xuat-sl').max = '';
+                updateExportTotal();
+                return;
+            }
+            info.innerHTML = `Tồn kho: <b class="text-success">${part.soluong}</b> · Giá bán gợi ý: <b>${formatMoney(part.giaban)}</b>`;
+            document.getElementById('lk-xuat-gia').value = (Number(part.giaban) || 0) / 1000;
+            document.getElementById('lk-xuat-sl').max = part.soluong;
+            updateExportTotal();
+        }
+
+        function updateExportTotal() {
+            const sl = Number(document.getElementById('lk-xuat-sl').value) || 0;
+            const gia = (Number(document.getElementById('lk-xuat-gia').value) || 0) * 1000;
+            const el = document.getElementById('lk-xuat-tong');
+            if (el) el.textContent = formatMoney(sl * gia);
+        }
+
+        function addPart() {
+            const ten = document.getElementById('lk-ten').value.trim();
+            const dongmay = document.getElementById('lk-dongmay').value.trim();
+            const soluong = Number(document.getElementById('lk-soluong').value) || 0;
+            const gianhap = (Number(document.getElementById('lk-gianhap').value) || 0) * 1000;
+            const giaban = (Number(document.getElementById('lk-giaban').value) || 0) * 1000;
+            const hinhthuc = document.getElementById('lk-hinhthuc').value;
+
+            if (!ten || !dongmay) return showToast('Vui lòng nhập Tên và Dòng máy', true);
+            if (soluong <= 0) return showToast('Số lượng phải > 0', true);
+
+            if (!store.parts) store.parts = [];
+            const existing = store.parts.find(p =>
+                p.ten.toLowerCase() === ten.toLowerCase() &&
+                p.dongmay.toLowerCase() === dongmay.toLowerCase()
+            );
+            if (existing) {
+                existing.soluong = (Number(existing.soluong) || 0) + soluong;
+                if (gianhap > 0) existing.gianhap = gianhap;
+                if (giaban > 0) existing.giaban = giaban;
+            } else {
+                store.parts.push({
+                    id: generateId(), ten, dongmay, gianhap, giaban, soluong, ngaynhap: localDateString()
+                });
+            }
+
+            const tongNhap = gianhap * soluong;
+            if (tongNhap > 0) {
+                store.transactions.push({
+                    id: generateId(), ngay: localDateString(), thoiGian: new Date().toISOString(),
+                    loai: 'Chi', danhmuc: 'Nhập linh kiện',
+                    noidung: `Nhập ${soluong} × ${ten} (${dongmay})`,
+                    sotien: tongNhap, hinhthuc
+                });
+            }
+
+            saveData(); renderAll();
+            document.getElementById('lk-ten').value = '';
+            document.getElementById('lk-dongmay').value = '';
+            document.getElementById('lk-soluong').value = '';
+            document.getElementById('lk-gianhap').value = '';
+            document.getElementById('lk-giaban').value = '';
+            showToast('Đã nhập linh kiện!');
+        }
+
+        function deletePart(id) {
+            if (!confirm('Xóa linh kiện này?')) return;
+            store.parts = (store.parts || []).filter(p => p.id !== id);
+            saveData(); renderAll();
+        }
+
+        function exportPart() {
+            const id = document.getElementById('lk-xuat-id').value;
+            const part = (store.parts || []).find(p => p.id === id);
+            if (!part) return showToast('Vui lòng chọn linh kiện', true);
+
+            const sl = Number(document.getElementById('lk-xuat-sl').value) || 0;
+            const gia = (Number(document.getElementById('lk-xuat-gia').value) || 0) * 1000;
+            const khach = document.getElementById('lk-xuat-khach').value.trim();
+            const hinhthuc = document.getElementById('lk-xuat-hinhthuc').value;
+
+            if (sl <= 0) return showToast('Số lượng phải > 0', true);
+            if (sl > Number(part.soluong)) return showToast('Không đủ tồn kho!', true);
+            if (gia < 0) return showToast('Giá bán không hợp lệ', true);
+
+            part.soluong = Number(part.soluong) - sl;
+            const tongThu = sl * gia;
+
+            if (tongThu > 0) {
+                store.transactions.push({
+                    id: generateId(), ngay: localDateString(), thoiGian: new Date().toISOString(),
+                    loai: 'Thu', danhmuc: 'Sửa chữa',
+                    noidung: `${khach ? khach + ' - ' : ''}${sl} × ${part.ten} (${part.dongmay})`,
+                    sotien: tongThu, hinhthuc
+                });
+            }
+
+            saveData(); renderAll();
+            document.getElementById('lk-xuat-khach').value = '';
+            showToast(`Đã xuất ${sl} × ${part.ten}, thu ${formatMoney(tongThu)}`);
+        }
+
         // ============ THU CHI ============
         function updateCategories() {
             const loai = document.getElementById('tc-loai').value;
             const select = document.getElementById('tc-danhmuc');
             const options = loai === 'Thu'
-                ? ['Bán máy', 'Thu nợ khách', 'Sửa chữa', 'Bán phụ kiện', 'Thu khác']
-                : ['Nhập máy', 'Dụng cụ - thiết bị', 'Sửa chữa', 'Trả nợ NCC', 'Chi khác'];
+                ? ['Bán máy', 'Thu nợ khách', 'Sửa chữa', 'Bán linh kiện', 'Bán phụ kiện', 'Thu khác']
+                : ['Nhập máy', 'Nhập linh kiện', 'Dụng cụ - thiết bị', 'Sửa chữa', 'Trả nợ NCC', 'Chi khác'];
             select.innerHTML = options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
         }
 
@@ -1325,7 +1535,7 @@ HoangLong Design
             const noidung = document.getElementById('tc-noidung').value.trim();
             const sotien = (Number(document.getElementById('tc-sotien').value) || 0) * 1000;
             const hinhthuc = document.getElementById('tc-hinhthuc').value;
-            
+
             if (!ngay || sotien <= 0) return showToast('Vui lòng nhập Ngày và Số tiền > 0', true);
 
             const now = new Date();
@@ -1335,11 +1545,11 @@ HoangLong Design
                 selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
             }
 
-            store.transactions.push({ 
+            store.transactions.push({
                 id: generateId(), ngay, thoiGian: selectedDate.toISOString(),
-                loai, danhmuc, noidung, sotien, hinhthuc 
+                loai, danhmuc, noidung, sotien, hinhthuc
             });
-            
+
             saveData(); renderAll();
             document.getElementById('tc-noidung').value = '';
             document.getElementById('tc-sotien').value = '';
@@ -1420,7 +1630,12 @@ HoangLong Design
                         showToast('File sai định dạng!', true); return;
                     }
                     if (confirm('Dữ liệu hiện tại sẽ bị GHI ĐÈ. Tiếp tục?')) {
-                        store = { phones: parsed.phones, transactions: parsed.transactions, settings: parsed.settings || { alertDays: 30 } };
+                        store = {
+                            phones: parsed.phones,
+                            transactions: parsed.transactions,
+                            parts: Array.isArray(parsed.parts) ? parsed.parts : [],
+                            settings: parsed.settings || { alertDays: 30 }
+                        };
                         saveData(); loadData(); renderAll();
                         showToast('Khôi phục thành công!');
                     }
