@@ -1,15 +1,3 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-
-        <link rel="stylesheet" href="styles.css" />
-    </head>
-    <body>
-
-       <script src="script.js"></script>
-    </body>
-</html>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -100,6 +88,44 @@
             -webkit-backdrop-filter: blur(10px);
             font-size: 0.75rem;
             font-weight: 600;
+        }
+
+        /* === ĐỒNG HỒ THỜI GIAN THỰC === */
+        .realtime-clock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 16px;
+            margin-bottom: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .realtime-clock .clock-time {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--apple-blue);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(10, 132, 255, 0.5);
+        }
+
+        .realtime-clock .clock-date {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .realtime-clock .clock-date .weekday {
+            color: var(--apple-orange);
+            font-weight: 700;
         }
 
         /* Thanh Tabs */
@@ -364,6 +390,7 @@
             .tab-btn { font-size: 0.85rem; padding: 8px 2px; }
             .stat-value { font-size: 1.15rem; }
             .btn-small { padding: 6px 10px; }
+            .realtime-clock .clock-time { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -376,6 +403,12 @@
         <span>Cửa hàng điện thoại</span>
         <span class="backup-countdown" id="backup-countdown" aria-live="polite">⏱ --:--</span>
     </h1>
+
+    <!-- === ĐỒNG HỒ THỜI GIAN THỰC === -->
+    <div class="realtime-clock">
+        <div class="clock-time" id="clock-time">--:--:--</div>
+        <div class="clock-date" id="clock-date">Đang tải...</div>
+    </div>
 
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('tab-tongquan', this)">Tổng quan</button>
@@ -510,7 +543,6 @@
         </div>
 
         <div class="panel">
-            <!-- CẬP NHẬT: Thêm bộ lọc Loại (Thu/Chi) bên cạnh bộ lọc tháng -->
             <div class="list-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
                 <div class="panel-title" style="margin:0">Sổ thu chi</div>
                 <div style="display:flex;gap:6px;">
@@ -540,7 +572,6 @@
                 <input type="number" id="sell-giaban" min="0" placeholder="VD: 10000" oninput="updateSellRemaining()">
             </div>
 
-            <!-- Vùng hiển thị Lãi/Lỗ dự kiến -->
             <div id="sell-profit-box" class="item-sub" style="display:none; padding:12px; margin-bottom:12px; border-radius:var(--radius-sm); text-align:center; transition: all 0.3s;">
                 Dự kiến: <b id="sell-profit-val" style="font-size:1.1rem">0</b>
             </div>
@@ -613,7 +644,6 @@
         </div>
     </div>
 
-    <!-- Toast thông báo -->
     <div id="toast" class="toast">Thành công!</div>
 
     <script>
@@ -653,42 +683,29 @@
             }[ch]));
         }
 
-        // HÀM FORMAT TIỀN TỆ (Nhận VNĐ, trả về dạng K/tr/ti)
         function formatMoney(amount) {
             if (amount === undefined || amount === null || amount === '') return '0';
             let num = Number(amount);
             if (num === 0) return '0';
-            
             let isNegative = num < 0;
             num = Math.abs(num);
-            
-            let ty = Math.floor(num / 1000000000);
-            num %= 1000000000;
-            let trieu = Math.floor(num / 1000000);
-            num %= 1000000;
+            let ty = Math.floor(num / 1000000000); num %= 1000000000;
+            let trieu = Math.floor(num / 1000000); num %= 1000000;
             let nghin = Math.floor(num / 1000);
             let dong = num % 1000;
-            
             let str = '';
             if (ty > 0) str += ty + 'ti';
-            
             if (trieu > 0) {
-                if (str !== '' && trieu < 100) str += String(trieu).padStart(3, '0');
-                else str += trieu;
+                if (str !== '' && trieu < 100) str += String(trieu).padStart(3, '0'); else str += trieu;
                 str += 'tr';
             }
-            
             if (nghin > 0) {
-                if (str !== '' && nghin < 100) str += String(nghin).padStart(3, '0');
-                else str += nghin;
+                if (str !== '' && nghin < 100) str += String(nghin).padStart(3, '0'); else str += nghin;
                 str += 'k';
             }
-            
             if (dong > 0 || str === '') {
-                if (str !== '' && dong < 100) str += String(dong).padStart(3, '0');
-                else str += dong;
+                if (str !== '' && dong < 100) str += String(dong).padStart(3, '0'); else str += dong;
             }
-            
             return (isNegative ? '-' : '') + str;
         }
 
@@ -698,7 +715,6 @@
             return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
         }
 
-        // HÀM MỚI: Format Ngày Giờ cho Giao dịch
         function formatTransactionDateTime(t) {
             if (t.thoiGian) {
                 try {
@@ -709,9 +725,7 @@
                     const hours = String(d.getHours()).padStart(2, '0');
                     const minutes = String(d.getMinutes()).padStart(2, '0');
                     return `${hours}:${minutes} ${day}/${month}/${year}`;
-                } catch (e) {
-                    return formatDate(t.ngay);
-                }
+                } catch (e) { return formatDate(t.ngay); }
             }
             return formatDate(t.ngay);
         }
@@ -726,9 +740,7 @@
                 const hours = String(d.getHours()).padStart(2, '0');
                 const minutes = String(d.getMinutes()).padStart(2, '0');
                 return `${hours}:${minutes} ${day}/${month}/${year}`;
-            } catch (e) {
-                return 'Lỗi định dạng';
-            }
+            } catch (e) { return 'Lỗi định dạng'; }
         }
 
         function showToast(msg, isError = false) {
@@ -747,9 +759,7 @@
                     store.phones = Array.isArray(parsed.phones) ? parsed.phones : [];
                     store.transactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
                     store.settings = parsed.settings || { alertDays: 30 };
-                } catch (e) {
-                    console.error('Lỗi đọc dữ liệu', e);
-                }
+                } catch (e) { console.error('Lỗi đọc dữ liệu', e); }
             }
             const today = localDateString();
             document.getElementById('km-ngaynhap').value = today;
@@ -758,11 +768,8 @@
         }
 
         function saveData() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-            } catch (e) {
-                showToast('Lỗi bộ nhớ!', true);
-            }
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
+            catch (e) { showToast('Lỗi bộ nhớ!', true); }
         }
 
         function createAutoBackup() {
@@ -799,6 +806,31 @@
             }, 1000);
         }
 
+        // === ĐỒNG HỒ THỜI GIAN THỰC ===
+        function updateRealtimeClock() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const timeEl = document.getElementById('clock-time');
+            if (timeEl) timeEl.textContent = `${hh}:${mm}:${ss}`;
+
+            const weekdays = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const thu = weekdays[now.getDay()];
+            const dd = String(now.getDate()).padStart(2, '0');
+            const mo = String(now.getMonth() + 1).padStart(2, '0');
+            const yyyy = now.getFullYear();
+            const dateEl = document.getElementById('clock-date');
+            if (dateEl) {
+                dateEl.innerHTML = `<span class="weekday">${thu}</span>, ngày ${dd}/${mo}/${yyyy}`;
+            }
+        }
+
+        function startRealtimeClock() {
+            updateRealtimeClock();
+            setInterval(updateRealtimeClock, 1000);
+        }
+
         function saveSettings() {
             store.settings.alertDays = Math.max(1, parseInt(document.getElementById('canh-bao-ngay').value, 10) || 30);
             saveData();
@@ -807,17 +839,17 @@
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
         function openStockFromOverview() {
-            const dsMayTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-may"]');
-            if (!dsMayTabButton) return;
+            const btn = document.querySelector('.tabs .tab-btn[onclick*="tab-may"]');
+            if (!btn) return;
             document.getElementById('may-filter').value = 'stock';
-            switchTab('tab-may', dsMayTabButton);
+            switchTab('tab-may', btn);
         }
 
         function openSoldFromOverview() {
-            const dsMayTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-may"]');
-            if (!dsMayTabButton) return;
+            const btn = document.querySelector('.tabs .tab-btn[onclick*="tab-may"]');
+            if (!btn) return;
             document.getElementById('may-filter').value = 'sold';
-            switchTab('tab-may', dsMayTabButton);
+            switchTab('tab-may', btn);
         }
 
         function switchTab(tabId, button) {
@@ -847,7 +879,6 @@
 
         function renderOverview() {
             let totalQuy = 0, cash = 0, bank = 0;
-
             store.transactions.forEach(t => {
                 const amount = Number(t.sotien) || 0;
                 const isThu = t.loai === 'Thu';
@@ -898,11 +929,9 @@
                     let subText = `Nhập: ${formatDate(p.ngaynhap)}`;
                     if (Number(p.noConLai) > 0) subText += ` · <span class="text-warning">Nợ NCC: ${formatMoney(p.noConLai)}</span>`;
                     if (Number(p.khachNo) > 0) subText += ` · <span class="text-warning">Khách nợ: ${formatMoney(p.khachNo)}</span>`;
-
                     let buttons = '';
                     if (Number(p.noConLai) > 0) buttons += `<button class="btn btn-small btn-warning" onclick="openPayModal('${p.id}')">Trả NCC</button>`;
                     if (Number(p.khachNo) > 0) buttons += `<button class="btn btn-small btn-success" onclick="openCollectModal('${p.id}')">Thu KH</button>`;
-
                     return `<div class="list-item">
                         <div class="item-info">
                             <div class="item-title">${escapeHtml(p.ten)} <span>· ${escapeHtml(p.imei)}</span></div>
@@ -935,7 +964,6 @@
             }
 
             const today = new Date(); today.setHours(0, 0, 0, 0);
-
             let sorted;
             if (filter === 'old') {
                 sorted = [...list].sort((a, b) => {
@@ -947,13 +975,11 @@
                 sorted = [...list].sort((a, b) => (b.ngaynhap || '').localeCompare(a.ngaynhap || ''));
             }
 
-            let totalProfit = 0;
-            let soldCount = 0;
+            let totalProfit = 0, soldCount = 0;
             list.forEach(p => {
                 if (p.trangthai === 'sold') {
                     const von = (Number(p.gianhap) || 0) + (Number(p.chiphi) || 0);
-                    const lai = (Number(p.giaban) || 0) - von;
-                    totalProfit += lai;
+                    totalProfit += (Number(p.giaban) || 0) - von;
                     soldCount++;
                 }
             });
@@ -965,7 +991,6 @@
                 const bgGradient = totalProfit >= 0 
                     ? 'linear-gradient(135deg, rgba(48,209,88,0.1), rgba(30,30,35,0.6))' 
                     : 'linear-gradient(135deg, rgba(255,69,58,0.1), rgba(30,30,35,0.6))';
-                
                 summaryHtml = `
                     <div class="stat-box" style="margin-bottom:16px; width: 100%; border-color: ${borderColor}; background: ${bgGradient};">
                         <div class="stat-label">Tổng lãi (${soldCount} máy đã bán)</div>
@@ -1001,9 +1026,7 @@
                     const lai = ban - von;
                     const laiClass = lai >= 0 ? 'text-success' : 'text-danger';
                     const laiText = lai >= 0 ? `+${formatMoney(lai)}` : formatMoney(lai);
-                    
                     const dateBanStr = p.ngayBan ? formatDateTime(p.ngayBan) : 'Không có dữ liệu cũ';
-                    
                     detailHtml = `
                         <span style="color:var(--apple-gray);font-size:0.8rem">Bán lúc: ${dateBanStr}</span><br>
                         Vốn: ${formatMoney(von)} · Bán: <b>${formatMoney(ban)}</b><br>
@@ -1030,23 +1053,18 @@
         function openPhoneDetail(id) {
             const phone = store.phones.find(p => p.id === id);
             if (!phone) return;
-            
             if (phone.trangthai === 'sold') {
                 const von = (Number(phone.gianhap) || 0) + (Number(phone.chiphi) || 0);
                 const ban = Number(phone.giaban) || 0;
                 const lai = ban - von;
                 const dateBanStr = phone.ngayBan ? formatDateTime(phone.ngayBan) : 'Không có dữ liệu cũ';
-                
                 let msg = `--- MÁY ĐÃ BÁN ---\n`;
                 msg += `Tên: ${phone.ten}\n`;
                 msg += `Thời gian bán: ${dateBanStr}\n`;
                 msg += `Giá vốn: ${formatMoney(von)}\n`;
                 msg += `Giá bán: ${formatMoney(ban)}\n`;
                 msg += `Lãi/Lỗ: ${lai >= 0 ? '+' : ''}${formatMoney(lai)}\n`;
-                
-                if (phone.khachNo > 0) {
-                    msg += `\nKhách còn nợ: ${formatMoney(phone.khachNo)}\n(Bấm nút "Thu nợ" để thu tiền)`;
-                }
+                if (phone.khachNo > 0) msg += `\nKhách còn nợ: ${formatMoney(phone.khachNo)}\n(Bấm nút "Thu nợ" để thu tiền)`;
                 alert(msg);
                 return;
             }
@@ -1058,7 +1076,6 @@
             const phone = store.phones.find(p => p.id === id);
             if (!phone || phone.trangthai !== 'stock') return;
             currentSellPhoneId = id;
-            
             currentSellCostPrice = (Number(phone.gianhap) || 0) + (Number(phone.chiphi) || 0);
 
             document.getElementById('sell-title').textContent = `Bán: ${phone.ten}`;
@@ -1069,7 +1086,6 @@
             document.getElementById('sell-giaban').value = '';
             document.getElementById('sell-tra-truoc').value = '';
             document.getElementById('sell-con-no').textContent = '0';
-            
             document.getElementById('sell-profit-box').style.display = 'none';
 
             selectSellMethod(document.querySelector('#sell-method-group .method-option[data-method="Tiền mặt"]'));
@@ -1084,7 +1100,6 @@
             const giaban = (Number(document.getElementById('sell-giaban').value) || 0) * 1000;
             const traTruocStr = document.getElementById('sell-tra-truoc').value;
             const traTruoc = traTruocStr === '' ? giaban : (Number(traTruocStr) || 0) * 1000;
-            
             document.getElementById('sell-con-no').textContent = formatMoney(Math.max(0, giaban - traTruoc));
 
             const profitBox = document.getElementById('sell-profit-box');
@@ -1093,7 +1108,6 @@
             if (giaban > 0) {
                 profitBox.style.display = 'block';
                 const lai = giaban - currentSellCostPrice;
-                
                 if (lai > 0) {
                     profitBox.style.background = 'rgba(48, 209, 88, 0.1)';
                     profitBox.style.border = '1px solid rgba(48, 209, 88, 0.3)';
@@ -1136,15 +1150,10 @@
 
             if (traTruoc > 0) {
                 store.transactions.push({
-                    id: generateId(), 
-                    ngay: localDateString(), 
-                    thoiGian: new Date().toISOString(), // Thêm thời gian
-                    loai: 'Thu', 
-                    danhmuc: 'Bán máy',
+                    id: generateId(), ngay: localDateString(), thoiGian: new Date().toISOString(),
+                    loai: 'Thu', danhmuc: 'Bán máy',
                     noidung: `Bán ${phone.ten}${conNo > 0 ? ` (KH nợ ${formatMoney(conNo)})` : ''}`,
-                    sotien: traTruoc, 
-                    hinhthuc: method, 
-                    phoneId: phone.id
+                    sotien: traTruoc, hinhthuc: method, phoneId: phone.id
                 });
             }
 
@@ -1173,31 +1182,24 @@
             if (!phone) return;
             const soTien = (Number(document.getElementById('pay-sotien').value) || 0) * 1000;
             const conLai = Number(phone.noConLai) || 0;
-            
             if (soTien <= 0 || soTien > conLai) return showToast('Số tiền trả không hợp lệ', true);
 
             const method = document.querySelector('#pay-method-group .method-option.selected').dataset.method;
             phone.noConLai = conLai - soTien;
 
             store.transactions.push({
-                id: generateId(), 
-                ngay: localDateString(), 
-                thoiGian: new Date().toISOString(), // Thêm thời gian
-                loai: 'Chi', 
-                danhmuc: 'Trả nợ NCC',
-                noidung: `Trả nợ ${phone.ten}`, 
-                sotien: soTien, 
-                hinhthuc: method, 
-                phoneId: phone.id
+                id: generateId(), ngay: localDateString(), thoiGian: new Date().toISOString(),
+                loai: 'Chi', danhmuc: 'Trả nợ NCC',
+                noidung: `Trả nợ ${phone.ten}`, sotien: soTien, hinhthuc: method, phoneId: phone.id
             });
 
             saveData(); renderAll(); closePayModal();
             showToast(`Đã chi ${formatMoney(soTien)} (${method}). Còn nợ: ${formatMoney(phone.noConLai)}`);
-            
-            const tcTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-thuchi"]');
-            if(tcTabButton) {
-                switchTab('tab-thuchi', tcTabButton);
-                document.getElementById('tc-filter-type').value = 'all'; // Reset bộ lọc
+
+            const tcBtn = document.querySelector('.tabs .tab-btn[onclick*="tab-thuchi"]');
+            if(tcBtn) {
+                switchTab('tab-thuchi', tcBtn);
+                document.getElementById('tc-filter-type').value = 'all';
                 document.getElementById('tc-filter-month').value = localDateString().slice(0, 7);
                 renderTransactions();
             }
@@ -1224,31 +1226,24 @@
             if (!phone) return;
             const soTien = (Number(document.getElementById('collect-sotien').value) || 0) * 1000;
             const khachNo = Number(phone.khachNo) || 0;
-            
             if (soTien <= 0 || soTien > khachNo) return showToast('Số tiền thu không hợp lệ', true);
 
             const method = document.querySelector('#collect-method-group .method-option.selected').dataset.method;
             phone.khachNo = khachNo - soTien;
 
             store.transactions.push({
-                id: generateId(), 
-                ngay: localDateString(), 
-                thoiGian: new Date().toISOString(), // Thêm thời gian
-                loai: 'Thu', 
-                danhmuc: 'Thu nợ khách',
-                noidung: `Thu nợ ${phone.ten}`, 
-                sotien: soTien, 
-                hinhthuc: method, 
-                phoneId: phone.id
+                id: generateId(), ngay: localDateString(), thoiGian: new Date().toISOString(),
+                loai: 'Thu', danhmuc: 'Thu nợ khách',
+                noidung: `Thu nợ ${phone.ten}`, sotien: soTien, hinhthuc: method, phoneId: phone.id
             });
 
             saveData(); renderAll(); closeCollectModal();
             showToast(`Đã thu ${formatMoney(soTien)} (${method}). KH còn nợ: ${formatMoney(phone.khachNo)}`);
-            
-            const tcTabButton = document.querySelector('.tabs .tab-btn[onclick*="tab-thuchi"]');
-            if(tcTabButton) {
-                switchTab('tab-thuchi', tcTabButton);
-                document.getElementById('tc-filter-type').value = 'all'; // Reset bộ lọc
+
+            const tcBtn = document.querySelector('.tabs .tab-btn[onclick*="tab-thuchi"]');
+            if(tcBtn) {
+                switchTab('tab-thuchi', tcBtn);
+                document.getElementById('tc-filter-type').value = 'all';
                 document.getElementById('tc-filter-month').value = localDateString().slice(0, 7);
                 renderTransactions();
             }
@@ -1284,23 +1279,18 @@
                 if (localDateString(selectedDate) === localDateString()) {
                     selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
                 }
-
                 store.transactions.push({
-                    id: generateId(), 
-                    ngay: ngaynhap, 
-                    thoiGian: selectedDate.toISOString(), // Gán thời gian
-                    loai: 'Chi', 
-                    danhmuc: 'Nhập máy',
-                    noidung: ten, 
-                    sotien: tongVon, 
-                    hinhthuc: hinhthuc, 
-                    phoneId: newPhone.id
+                    id: generateId(), ngay: ngaynhap, thoiGian: selectedDate.toISOString(),
+                    loai: 'Chi', danhmuc: 'Nhập máy',
+                    noidung: ten, sotien: tongVon, hinhthuc: hinhthuc, phoneId: newPhone.id
                 });
             }
 
             saveData(); renderAll();
-            document.getElementById('km-ten').value = ''; document.getElementById('km-imei').value = '';
-            document.getElementById('km-gianhap').value = ''; document.getElementById('km-chiphisua').value = '';
+            document.getElementById('km-ten').value = '';
+            document.getElementById('km-imei').value = '';
+            document.getElementById('km-gianhap').value = '';
+            document.getElementById('km-chiphisua').value = '';
             showToast('Đã thêm máy vào kho!');
         }
 
@@ -1338,7 +1328,6 @@
             
             if (!ngay || sotien <= 0) return showToast('Vui lòng nhập Ngày và Số tiền > 0', true);
 
-            // Tính toán thời gian thực tế
             const now = new Date();
             const [year, month, day] = ngay.split('-');
             const selectedDate = new Date(year, month - 1, day);
@@ -1347,18 +1336,13 @@
             }
 
             store.transactions.push({ 
-                id: generateId(), 
-                ngay, 
-                thoiGian: selectedDate.toISOString(), // Lưu thời gian chi tiết
-                loai, 
-                danhmuc, 
-                noidung, 
-                sotien, 
-                hinhthuc 
+                id: generateId(), ngay, thoiGian: selectedDate.toISOString(),
+                loai, danhmuc, noidung, sotien, hinhthuc 
             });
             
             saveData(); renderAll();
-            document.getElementById('tc-noidung').value = ''; document.getElementById('tc-sotien').value = '';
+            document.getElementById('tc-noidung').value = '';
+            document.getElementById('tc-sotien').value = '';
             showToast('Đã lưu giao dịch!');
         }
 
@@ -1367,9 +1351,8 @@
             const container = document.getElementById('list-transactions');
             const summaryEl = document.getElementById('tc-summary');
             const month = document.getElementById('tc-filter-month').value;
-            const type = document.getElementById('tc-filter-type').value; // Lấy giá trị bộ lọc Loại
+            const type = document.getElementById('tc-filter-type').value;
 
-            // Lọc theo tháng và loại (Thu/Chi)
             const transactions = store.transactions.filter(t => {
                 const matchMonth = (month === 'all' || (t.ngay || '').startsWith(month));
                 const matchType = (type === 'all' || t.loai === type);
@@ -1382,7 +1365,6 @@
                 return;
             }
 
-            // Sắp xếp mới nhất lên đầu (ưu tiên thoiGian, fallback ngay)
             const sorted = [...transactions].sort((a, b) => {
                 const timeA = a.thoiGian || a.ngay;
                 const timeB = b.thoiGian || b.ngay;
@@ -1390,14 +1372,11 @@
             });
 
             let sumThu = 0, sumChi = 0;
-            
             container.innerHTML = sorted.map(t => {
                 const isThu = t.loai === 'Thu';
                 const amount = Number(t.sotien) || 0;
                 if (isThu) sumThu += amount; else sumChi += amount;
-                
-                const timeDisplay = formatTransactionDateTime(t); // Gọi hàm format ngày giờ mới
-
+                const timeDisplay = formatTransactionDateTime(t);
                 return `<div class="list-item">
                     <div class="item-info">
                         <div class="item-title">${escapeHtml(t.danhmuc)}</div>
@@ -1457,6 +1436,7 @@
             updateCategories();
             renderAll();
             startAutoBackup();
+            startRealtimeClock();
         });
     </script>
 </body>
